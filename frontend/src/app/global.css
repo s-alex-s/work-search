@@ -1,0 +1,14 @@
+body {
+    margin: 0;
+}
+
+a {
+    line-height: 0;
+}
+
+.central-form {
+    margin: 0 auto !important;
+    border: 1px solid #d9d9d9 !important;
+    padding: 20px !important;
+    border-radius: 18px !important
+}

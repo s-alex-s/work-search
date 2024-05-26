@@ -1,0 +1,13 @@
+.header {
+    background-color: #2a3137;
+    padding: 20px;
+    margin-bottom: 50px;
+}
+
+.header a {
+    color: white !important;
+}
+
+.navElement {
+    margin-left: 30px;
+}

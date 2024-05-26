@@ -1,0 +1,11 @@
+.button {
+    width: 100%;
+}
+
+.login_form {
+    max-width: 350px;
+}
+
+.login_icon_color {
+    color: #bababa !important;
+}
