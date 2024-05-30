@@ -8,8 +8,12 @@ import {red} from "@ant-design/colors";
 import {App, ConfigProvider} from "antd";
 import ruRU from "antd/locale/ru_RU";
 import "./global.css";
+import dayjs from "dayjs";
+import 'dayjs/locale/ru';
 
 const inter = Inter({subsets: ["latin"]});
+
+dayjs.locale('ru');
 
 export const metadata: Metadata = {
     // @ts-ignore
@@ -35,11 +39,14 @@ export default async function RootLayout({children,}: Readonly<{ children: React
                         },
                         components: {
                             Input: {
-                                hoverBorderColor: '#d9d9d9',
-                                activeBorderColor: '#d9d9d9',
+                                hoverBorderColor: '#b5b5b5',
+                                activeBorderColor: '#b5b5b5',
                             },
                             Form: {
                                 verticalLabelMargin: -8
+                            },
+                            Divider: {
+                                colorSplit: '#d9d9d9',
                             }
                         }
                     }}>

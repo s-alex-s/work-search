@@ -8,6 +8,14 @@
     color: white !important;
 }
 
+.logout-button {
+    color: #f5222d !important;
+}
+
 .navElement {
     margin-left: 30px;
+}
+
+.rightNavElement {
+    margin-right: 30px;
 }
