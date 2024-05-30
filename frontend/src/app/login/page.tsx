@@ -13,12 +13,12 @@ import Loading from "@/app/loading";
 
 
 type FieldType = {
-    username?: string;
-    password?: string;
+    username: string;
+    password: string;
 };
 
 type EmailFormType = {
-    email?: string;
+    email: string;
 };
 
 type EmailFormProps = {
@@ -121,7 +121,7 @@ export default function LoginPage() {
                 setIsUserLoading(false);
             }
         });
-    });
+    }, []);
 
     function onSubmit(values: ValuesType, actionType: ActionType) {
         setOpen(false);
@@ -170,7 +170,7 @@ export default function LoginPage() {
                         .then(r => {
                             setShowAlert(!r);
                             if (r) {
-                                context.update();
+                                context.setUser(r);
                                 router.push('/');
                             }
                             setIsLoading(false);

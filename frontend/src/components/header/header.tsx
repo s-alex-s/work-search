@@ -1,18 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import {Button, Flex, Spin} from "antd";
+import {Button, Dropdown, Flex, MenuProps, Spin} from "antd";
 import React, {useContext} from "react";
-import {logoutUser} from "@/utils/auth";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {LoadingOutlined} from "@ant-design/icons";
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {NO_HEADER_PAGES} from "@/config";
 import styles from "./header.module.css";
+import {logoutUser} from "@/utils/auth";
 
 
 export default function Header() {
     const context = useContext(AuthContext) as AuthContextType;
+    const router = useRouter();
+    const items: MenuProps['items'] = [
+        {
+            label: <Link href='/profile'>Профиль</Link>,
+            key: 'profile'
+        },
+        {
+            label: <div style={{color: '#f5222d'}} onClick={() => {
+                logoutUser().then(() => {
+                    context.setUser(null);
+                    router.push('/login');
+                });
+            }}>Выйти</div>,
+            key: 'logout'
+        }
+    ];
 
     if (!NO_HEADER_PAGES.test(usePathname())) return (
         <header className={styles.header}>
@@ -39,13 +55,26 @@ export default function Header() {
                         </text>
                     </svg>
                 </Link>
+
+                <Link href='' className={styles.navElement}>Моё резюме</Link>
+                <Link href='' className={styles.navElement}>Мои вакансии</Link>
+                <Link href='' className={styles.navElement}>Отклики</Link>
+
                 <div style={{marginLeft: 'auto'}}/>
+
                 {!context.loading ?
                     context.user ?
-                        <Button onClick={() => {
-                            logoutUser().then();
-                            context.update();
-                        }} type="primary">Выйти</Button> :
+                        <Dropdown
+                            menu={{items}}
+                            trigger={['hover']}
+                            overlayStyle={{paddingTop: '15px'}}
+                        >
+                            <a
+                                onClick={(e) => e.preventDefault()}
+                            >
+                                {context.user.first_name} {context.user.last_name}
+                            </a>
+                        </Dropdown> :
                         <Link href="/login"><Button type="primary">Войти</Button></Link> :
                     <Spin indicator={<LoadingOutlined spin style={{fontSize: 32}}/>}/>}
             </Flex>

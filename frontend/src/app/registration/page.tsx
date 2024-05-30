@@ -1,18 +1,29 @@
 "use client";
 
-import {App, Button, Form, FormInstance, Input, Result} from "antd";
+import {App, Button, DatePicker, Form, FormInstance, Input, Result, Select} from "antd";
 import React, {useEffect, useState} from "react";
 import {getUser, registerUser, resendActivation} from "@/utils/auth";
 
 import styles from './registration.module.css';
 import Link from "next/link";
-import {MESSAGE_DURATION, PASSWORD_RULES, USERNAME_RULES} from "@/config";
+import {
+    DATE_FORMAT,
+    FIRST_NAME_RULES,
+    LAST_NAME_RULES,
+    MESSAGE_DURATION,
+    PASSWORD_RULES,
+    RE_PASSWORD_RULES,
+    USER_BIRTH_DATE_RULES,
+    USERNAME_RULES
+} from "@/config";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
 
 type FieldType = {
     first_name: string;
     last_name: string;
+    birth_date: string;
+    gender: 'm' | 'f';
     email: string;
     username: string;
     password: string;
@@ -106,7 +117,7 @@ export default function RegistrationPage() {
                 setIsUserLoading(false);
             }
         });
-    });
+    }, []);
 
     function onFinish(val: object | null) {
         setButtonLoading(false);
@@ -133,6 +144,10 @@ export default function RegistrationPage() {
             form={form}
             onFinish={values => {
                 setButtonLoading(true);
+                // @ts-ignore
+                const $M = values.birth_date.$M + 1;
+                // @ts-ignore
+                values.birth_date = `${values.birth_date.$y}-${$M + 1 < 10 ? `0${$M}` : `${$M}`}-${values.birth_date.$D}`;
                 registerUser(values).then(onFinish);
             }}
             autoComplete="off">
@@ -140,35 +155,43 @@ export default function RegistrationPage() {
             <Form.Item<FieldType>
                 label="Имя"
                 name="first_name"
-                rules={[{required: true, type: 'string', message: 'Пожалуйста, введите своё имя'},
-                    () => ({
-                            validator(_, value) {
-                                if (!value || [...value].every(char => isNaN(char))) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('Имя должно состоять только из букв'));
-                            }
-                        }
-                    )
-                ]}>
+                rules={FIRST_NAME_RULES}>
                 <Input/>
             </Form.Item>
 
             <Form.Item<FieldType>
                 label="Фамилия"
                 name="last_name"
-                rules={[{required: true, type: 'string', message: 'Пожалуйста, введите свою фамилию'},
-                    () => ({
-                            validator(_, value) {
-                                if (!value || [...value].every(char => isNaN(char))) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('Фамилия должна состоять только из букв'));
-                            }
-                        }
-                    )
-                ]}>
+                rules={LAST_NAME_RULES}>
                 <Input/>
+            </Form.Item>
+
+            <Form.Item<FieldType>
+                label="Дата рождения"
+                name="birth_date"
+                rules={USER_BIRTH_DATE_RULES}
+            >
+                <DatePicker
+                    style={{width: '100%'}}
+                    format={DATE_FORMAT}
+                    allowClear={false}
+                    placeholder=""
+                />
+            </Form.Item>
+
+            <Form.Item<FieldType>
+                label="Пол"
+                name="gender"
+                rules={[
+                    {required: true, message: 'Укажите свой пол'}
+                ]}
+            >
+                <Select
+                    options={[
+                        {value: 'm', label: 'Мужской'},
+                        {value: 'f', label: 'Женский'}
+                    ]}
+                />
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -199,21 +222,7 @@ export default function RegistrationPage() {
                 name="re_password"
                 hasFeedback
                 dependencies={['password']}
-                rules={[
-                    {
-                        required: true,
-                        message: 'Пожалуйста, повторно введите пароль'
-                    },
-                    ({getFieldValue}) => ({
-                            validator(_, value) {
-                                if (!value || getFieldValue('password') === value) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('Пароли не совпадают'));
-                            }
-                        }
-                    )
-                ]}>
+                rules={RE_PASSWORD_RULES}>
                 <Input.Password/>
             </Form.Item>
 
