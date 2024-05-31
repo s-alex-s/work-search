@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "main.apps.MainConfig",
     'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',
     'djoser',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     "corsheaders",
     'drf_spectacular',
     'drf_spectacular_sidecar',
@@ -164,7 +166,7 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
     'TITLE': 'WorkSearch',
     'DESCRIPTION': 'Сайт для поиска и публикации вакансий (API)',
-    'VERSION': '0.3.0',
+    'VERSION': '0.4.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SCHEMA_PATH_PREFIX': r'/api/auth/users|/api/auth'
 }

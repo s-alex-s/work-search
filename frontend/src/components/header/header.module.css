@@ -5,7 +5,10 @@
 }
 
 .header a {
-    color: white !important;
+    color: white;
+}
+.header a:hover {
+    color: #fea4a4 !important;
 }
 
 .logout-button {

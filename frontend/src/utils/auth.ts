@@ -15,6 +15,24 @@ export type UserDataType = {
     token: string,
 }
 
+export async function deleteUser(token: string, current_password: string): Promise<boolean> {
+    let response = await fetch(
+        'http://localhost:8000/api/auth/users/me/',
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'JWT ' + token,
+            },
+            body: JSON.stringify({
+                'current_password': current_password
+            })
+        }
+    );
+
+    return response.ok;
+}
+
 export async function retrieveUserData(access: string): Promise<UserDataType> {
     let user_data = await fetch(
         'http://localhost:8000/api/auth/users/me/',

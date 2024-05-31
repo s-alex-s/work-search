@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_countries.fields import CountryField
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUser(AbstractUser):
@@ -17,3 +19,44 @@ class CustomUser(AbstractUser):
                        'birth_date',
                        'gender'
                        ]
+
+
+class Resume(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+    phone_number = PhoneNumberField(blank=True)
+    additional_contacts = models.TextField(blank=True)
+    profession = models.CharField(max_length=250)
+    busyness = models.CharField(max_length=250, blank=True)
+    languages = models.TextField(blank=True)
+    education = models.TextField(blank=True)
+    country = CountryField(blank=True)
+    work_experience = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Резюме'
+        verbose_name_plural = 'Резюме'
+
+
+class Vacancy(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    title = models.CharField(max_length=250)
+    salary = models.IntegerField(blank=True)
+    company = models.CharField(max_length=250)
+    requirements = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Вакансия'
+        verbose_name_plural = 'Вакансии'
+
+
+class Feedback(models.Model):
+    resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Отклик'
+        verbose_name_plural = 'Отклики'
