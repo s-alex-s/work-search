@@ -20,6 +20,9 @@ class CustomUser(AbstractUser):
                        'gender'
                        ]
 
+    def __str__(self):
+        return f'ID: {self.pk}, Username: {self.username}'
+
 
 class Resume(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -37,6 +40,9 @@ class Resume(models.Model):
         verbose_name = 'Резюме'
         verbose_name_plural = 'Резюме'
 
+    def __str__(self):
+        return self.user.username
+
 
 class Vacancy(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -52,6 +58,9 @@ class Vacancy(models.Model):
         verbose_name = 'Вакансия'
         verbose_name_plural = 'Вакансии'
 
+    def __str__(self):
+        return self.title
+
 
 class Feedback(models.Model):
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
@@ -60,3 +69,6 @@ class Feedback(models.Model):
     class Meta:
         verbose_name = 'Отклик'
         verbose_name_plural = 'Отклики'
+
+    def __str__(self):
+        return f'{self.resume.user.username} - {self.vacancy.title}'

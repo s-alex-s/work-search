@@ -16,6 +16,12 @@ class SearchVacancySerializer(ModelSerializer):
         fields = ['title']
 
 
+class SearchVacancyResultSerializer(ModelSerializer):
+    class Meta:
+        model = Vacancy
+        exclude = ['requirements', 'created_at', 'description', 'user']
+
+
 class ResumeSerializer(ModelSerializer):
     class Meta:
         model = Resume
