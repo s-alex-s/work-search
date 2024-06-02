@@ -1,3 +1,4 @@
+from django_countries.serializers import CountryFieldMixin
 from rest_framework.serializers import ModelSerializer
 
 from main.models import CustomUser, Resume, Vacancy, Feedback
@@ -22,13 +23,13 @@ class SearchVacancyResultSerializer(ModelSerializer):
         exclude = ['requirements', 'created_at', 'description', 'user']
 
 
-class ResumeSerializer(ModelSerializer):
+class ResumeSerializer(CountryFieldMixin, ModelSerializer):
     class Meta:
         model = Resume
         fields = '__all__'
 
 
-class UpdateResumeSerializer(ModelSerializer):
+class UpdateResumeSerializer(CountryFieldMixin, ModelSerializer):
     class Meta:
         model = Resume
         exclude = ['user']
