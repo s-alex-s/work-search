@@ -8,9 +8,11 @@ import styles from './registration.module.css';
 import Link from "next/link";
 import {
     DATE_FORMAT,
+    EMAIL_LENGTH,
     FIRST_NAME_RULES,
     LAST_NAME_RULES,
     MESSAGE_DURATION,
+    PASSWORD_LENGTH,
     PASSWORD_RULES,
     RE_PASSWORD_RULES,
     USER_BIRTH_DATE_RULES,
@@ -18,6 +20,7 @@ import {
 } from "@/config";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
+import {getFormErrors} from "@/utils/form";
 
 type FieldType = {
     first_name: string;
@@ -122,14 +125,7 @@ export default function RegistrationPage() {
     function onFinish(val: object | null) {
         setButtonLoading(false);
         if (val) {
-            const key = Object.keys(val)[0];
-            form.setFields([
-                {
-                    name: key,
-                    // @ts-ignore
-                    errors: val[key]
-                }
-            ]);
+            getFormErrors(val, form);
         } else {
             setIsSuccess(true);
         }
@@ -151,6 +147,7 @@ export default function RegistrationPage() {
                 registerUser(values).then(onFinish);
             }}
             autoComplete="off">
+            <h2 style={{marginTop: 0}}>Зарегистрируйтесь</h2>
 
             <Form.Item<FieldType>
                 label="Имя"
@@ -205,8 +202,11 @@ export default function RegistrationPage() {
                 label="E-mail"
                 name="email"
                 hasFeedback
-                rules={[{required: true}, {type: 'email', message: 'Некорректный формат эллектронной почты'}]}>
-                <Input/>
+                rules={[
+                    {required: true},
+                    {type: 'email', message: 'Некорректный формат эллектронной почты'}
+                ]}>
+                <Input maxLength={EMAIL_LENGTH}/>
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -214,7 +214,7 @@ export default function RegistrationPage() {
                 name="password"
                 hasFeedback
                 rules={PASSWORD_RULES}>
-                <Input.Password/>
+                <Input.Password maxLength={PASSWORD_LENGTH.max}/>
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -223,7 +223,7 @@ export default function RegistrationPage() {
                 hasFeedback
                 dependencies={['password']}
                 rules={RE_PASSWORD_RULES}>
-                <Input.Password/>
+                <Input.Password maxLength={PASSWORD_LENGTH.max}/>
             </Form.Item>
 
             <Form.Item>

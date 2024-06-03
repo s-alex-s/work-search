@@ -165,7 +165,7 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
     'TITLE': 'WorkSearch',
     'DESCRIPTION': 'Сайт для поиска и публикации вакансий (API)',
-    'VERSION': '0.5.1',
+    'VERSION': '0.6.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SCHEMA_PATH_PREFIX': r'/api/auth/users|/api/auth'
 }

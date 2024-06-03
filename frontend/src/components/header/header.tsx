@@ -8,7 +8,7 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {usePathname, useRouter} from "next/navigation";
 import {NO_HEADER_PAGES} from "@/config";
 import styles from "./header.module.css";
-import {logoutUser} from "@/utils/auth";
+import {logoutUser} from "@/utils/client_auth";
 
 
 export default function Header() {
@@ -20,12 +20,7 @@ export default function Header() {
             key: 'profile'
         },
         {
-            label: <div style={{color: '#f5222d'}} onClick={() => {
-                logoutUser().then(() => {
-                    context.setUser(null);
-                    router.push('/login');
-                });
-            }}>Выйти</div>,
+            label: <div style={{color: '#f5222d'}} onClick={() => logoutUser(context, router)}>Выйти</div>,
             key: 'logout'
         }
     ];
@@ -56,9 +51,9 @@ export default function Header() {
                     </svg>
                 </Link>
 
-                <Link href='' className={styles.navElement}>Моё резюме</Link>
-                <Link href='' className={styles.navElement}>Мои вакансии</Link>
-                <Link href='' className={styles.navElement}>Отклики</Link>
+                <Link href='/resume' className={styles.navElement}>Моё резюме</Link>
+                <Link href='/vacancies' className={styles.navElement}>Мои вакансии</Link>
+                <Link href='/feedbacks' className={styles.navElement}>Отклики</Link>
 
                 <div style={{marginLeft: 'auto'}}/>
 

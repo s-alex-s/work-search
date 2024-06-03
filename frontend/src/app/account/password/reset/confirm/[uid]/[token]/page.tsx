@@ -1,9 +1,9 @@
 "use client";
 
 import {App, Button, Form, Input, Result} from "antd";
-import {PASSWORD_RULES} from "@/config";
+import {MESSAGE_DURATION, PASSWORD_LENGTH, PASSWORD_RULES} from "@/config";
 import {useState} from "react";
-import {reset_password_confirm} from "@/utils/auth";
+import {reset_password_confirm} from "@/utils/user";
 import Link from "next/link";
 
 export function Success() {
@@ -44,7 +44,7 @@ export default function ResetPasswordPage({params}: { params: { uid: string, tok
                 ).then(r => {
                     setIsLoading(false);
                     if (!r) {
-                        message.error('Ошибка');
+                        message.error('Ошибка', MESSAGE_DURATION);
                     } else {
                         setIsSuccess(true);
                     }
@@ -56,7 +56,7 @@ export default function ResetPasswordPage({params}: { params: { uid: string, tok
                 hasFeedback
                 rules={PASSWORD_RULES}
             >
-                <Input.Password placeholder="Новый пароль"/>
+                <Input.Password placeholder="Новый пароль" maxLength={PASSWORD_LENGTH.max}/>
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -79,7 +79,7 @@ export default function ResetPasswordPage({params}: { params: { uid: string, tok
                     )
                 ]}
             >
-                <Input.Password placeholder="Повторите пароль"/>
+                <Input.Password placeholder="Повторите пароль" maxLength={PASSWORD_LENGTH.max}/>
             </Form.Item>
 
             <Form.Item>

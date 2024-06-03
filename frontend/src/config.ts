@@ -1,12 +1,45 @@
 import {Rule, RuleObject} from "rc-field-form/es/interface";
+import {isValidPhoneNumber} from "libphonenumber-js";
 
 export const ACCESS_TOKEN_LIFETIME = 60_000 * 5;
 export const REFRESH_TOKEN_LIFETIME = 60_000 * 60 * 24;
 export const DEFAULT_LIFETIME = 60_000 * 60 * 24 * 30;
 
+export const PASSWORD_LENGTH = {
+    min: 8,
+    max: 50,
+};
+
+export const PHONE_NUMBER_LENGTH = {
+    min: 10,
+    max: 10
+};
+
 export const MESSAGE_DURATION = 4;
 
 export const NO_HEADER_PAGES = new RegExp('/account/activate/');
+
+export const TEXT_MAX_LENGTH = 2000;
+export const SMALL_TEXT_MAX_LENGTH = 250;
+export const USERNAME_LENGTH = 150;
+export const EMAIL_LENGTH = 254;
+
+export const PHONE_NUMBER_RULES = [
+    {
+        ...PHONE_NUMBER_LENGTH,
+        message: 'Количество цифр в номере должно составлять 10'
+    },
+    () => ({
+        validator(_, value) {
+            if (!value) return Promise.resolve();
+            if (value.length !== 10 || isValidPhoneNumber(value, "KZ")) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject(new Error("Некорректный номер телефона"));
+            }
+        }
+    })
+] as Rule[];
 
 export const PASSWORD_RULES = [
     {
@@ -14,9 +47,8 @@ export const PASSWORD_RULES = [
         message: 'Пожалуйста, введите пароль'
     },
     {
-        min: 8,
-        max: 50,
-        message: 'Длина пароля должна быть между 8-50 символами'
+        ...PASSWORD_LENGTH,
+        message: `Длина пароля должна быть между ${PASSWORD_LENGTH.min}-${PASSWORD_LENGTH.max} символами`
     }
 ];
 export const RE_PASSWORD_RULES = [
@@ -35,7 +67,12 @@ export const RE_PASSWORD_RULES = [
     )
 ] as Rule[];
 
-export const USERNAME_RULES = [{required: true, type: 'string', message: 'Пожалуйста, введите имя пользователя'},
+export const USERNAME_RULES = [
+    {required: true, type: 'string', message: 'Пожалуйста, введите имя пользователя'},
+    {
+        max: USERNAME_LENGTH,
+        message: `Длина имени пользователя не должна превышать ${USERNAME_LENGTH} символов`
+    },
     () => ({
             validator(_: RuleObject, value: string) {
                 if (!value || /^[a-zA-Z0-9]+$/.test(value)) {
@@ -98,7 +135,7 @@ export const LAST_NAME_RULES = [
     )
 ] as Rule[];
 
-export const COUNTRIES = {
+const COUNTRIES_UNORDERED = {
     "AF": "Афганистан",
     "AX": "Аландские острова",
     "AL": "Албания",
@@ -349,3 +386,26 @@ export const COUNTRIES = {
     "ZM": "Замбия",
     "ZW": "Зимбабве",
 }
+
+export const COUNTRIES = Object.fromEntries(
+    Object.entries(COUNTRIES_UNORDERED).sort((a, b) => {
+        const nameA = a[1].toLowerCase();
+        const nameB = b[1].toLowerCase();
+
+        if (nameA < nameB) return -1;
+
+        if (nameA > nameB) return 1;
+
+        return 0;
+    })
+);
+
+export const COUNTRIES_OPTIONS = Array.from(
+    {length: Object.keys(COUNTRIES).length},
+    (_, i) => {
+        return {
+            value: Object.keys(COUNTRIES)[i],
+            // @ts-ignore
+            label: COUNTRIES[Object.keys(COUNTRIES)[i]]
+        };
+    });

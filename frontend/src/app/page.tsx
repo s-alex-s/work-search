@@ -1,13 +1,25 @@
 "use client";
 
-import {useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import AuthContext, {AuthContextType} from "@/context/auth";
+import {useRouter} from "next/navigation";
+import Loading from "@/app/loading";
+import {getUserOrLogout} from "@/utils/client_auth";
 
 export default function HomePage() {
     const context = useContext(AuthContext) as AuthContextType;
+    const router = useRouter();
 
-    if (context.user) {
-        return <h1>Home {context.user.name}</h1>
-    }
-    return <h1>Home</h1>
+    const [isUserLoading, setIsUserLoading] = useState(true);
+
+    useEffect(() => {
+        getUserOrLogout(context, router).then(r => {
+            if (r) {
+                setIsUserLoading(false);
+            }
+        });
+    }, []);
+
+    if (isUserLoading) return <Loading/>
+    return <h1>Home {context.user?.username}</h1>
 }

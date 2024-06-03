@@ -4,12 +4,13 @@ import React, {useContext, useEffect, useState} from "react";
 import {Alert, App, Button, Form, FormInstance, Input, Modal, Space} from "antd";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
-import {forgot_username, getUser, loginUser, resend_activation_user, reset_password} from "@/utils/auth";
+import {getUser, loginUser, resend_activation_user} from "@/utils/auth";
 import styles from './login.module.css';
 import Link from "next/link";
-import {MESSAGE_DURATION, PASSWORD_RULES, USERNAME_RULES} from "@/config";
+import {MESSAGE_DURATION, PASSWORD_LENGTH, PASSWORD_RULES, USERNAME_RULES} from "@/config";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
+import {forgot_username, reset_password} from "@/utils/user";
 
 
 type FieldType = {
@@ -177,6 +178,8 @@ export default function LoginPage() {
                         });
                 }}
                 autoComplete="off">
+                <h2 style={{marginTop: 0}}>Войдите в аккаунт</h2>
+
                 <Form.Item<FieldType>
                     name="username"
                     rules={USERNAME_RULES}>
@@ -188,7 +191,7 @@ export default function LoginPage() {
                     name="password"
                     rules={PASSWORD_RULES}>
                     <Input.Password prefix={<LockOutlined className={styles.login_icon_color}/>}
-                                    placeholder="Пароль"/>
+                                    placeholder="Пароль" maxLength={PASSWORD_LENGTH.max}/>
                 </Form.Item>
 
                 <Form.Item>

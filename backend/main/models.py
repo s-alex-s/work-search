@@ -28,13 +28,13 @@ class Resume(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
     phone_number = PhoneNumberField(blank=True)
-    additional_contacts = models.TextField(blank=True)
+    additional_contacts = models.TextField(blank=True, max_length=2000)
     profession = models.CharField(max_length=250)
     busyness = models.CharField(max_length=250, blank=True)
-    languages = models.TextField(blank=True)
-    education = models.TextField(blank=True)
+    languages = models.TextField(blank=True, max_length=2000)
+    education = models.TextField(blank=True, max_length=2000)
     country = CountryField(blank=True)
-    work_experience = models.TextField(blank=True)
+    work_experience = models.TextField(blank=True, max_length=2000)
 
     class Meta:
         verbose_name = 'Резюме'
@@ -50,9 +50,9 @@ class Vacancy(models.Model):
     title = models.CharField(max_length=250)
     salary = models.IntegerField(blank=True)
     company = models.CharField(max_length=250)
-    requirements = models.TextField(blank=True)
+    requirements = models.TextField(blank=True, max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, max_length=2000)
 
     class Meta:
         verbose_name = 'Вакансия'

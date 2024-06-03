@@ -1,14 +1,16 @@
 from django.core.mail import send_mail
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import status, serializers
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, ListAPIView, get_object_or_404
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, ListAPIView, \
+    get_object_or_404, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from main.models import CustomUser, Vacancy, Resume, Feedback
 from main.serializers import ForgotUsernameSerializer, ResumeSerializer, UpdateResumeSerializer, VacancySerializer, \
-    UpdateVacancySerializer, FeedbackSerializer, SearchVacancyResultSerializer, SearchVacancySerializer
+    UpdateVacancySerializer, FeedbackSerializer, SearchVacancyResultSerializer, SearchVacancySerializer, \
+    ResumeCreateSerializer
 
 
 class ForgotUsernameView(APIView):
@@ -47,11 +49,19 @@ class CreateResumeView(CreateAPIView):
     serializer_class = ResumeSerializer
     queryset = Resume.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        request.data['user'] = self.request.user.pk
+        serializer = ResumeCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 @extend_schema(
     tags=['Resume']
 )
-class GetUpdateResumeView(RetrieveUpdateAPIView):
+class GetUpdateDeleteResumeView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UpdateResumeSerializer
     queryset = Resume.objects.all()
@@ -68,11 +78,19 @@ class CreateVacancyView(CreateAPIView):
     serializer_class = VacancySerializer
     queryset = Vacancy.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        request.data['user'] = self.request.user.pk
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 @extend_schema(
     tags=['Vacancy']
 )
-class GetUpdateVacancyView(RetrieveUpdateAPIView):
+class GetUpdateDeleteVacancyView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UpdateVacancySerializer
     queryset = Vacancy.objects.all()
@@ -85,6 +103,11 @@ class GetUpdateVacancyView(RetrieveUpdateAPIView):
     def put(self, request, *args, **kwargs):
         if self.get_object().user.pk == self.request.user.pk:
             return self.update(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        if self.get_object().user.pk == self.request.user.pk:
+            return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
@@ -114,6 +137,14 @@ class CreateFeedbackView(CreateAPIView):
     serializer_class = FeedbackSerializer
     queryset = Feedback.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        request.data['resume'] = self.request.user.pk
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 @extend_schema(
     tags=['Feedback']
@@ -122,6 +153,11 @@ class DeleteFeedbackView(DestroyAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
+
+    def delete(self, request, *args, **kwargs):
+        if self.get_object().vacancy.user.pk == self.request.user.pk:
+            return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 @extend_schema(

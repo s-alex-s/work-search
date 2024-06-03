@@ -1,16 +1,27 @@
 "use client";
 
 import {useContext, useEffect, useState} from "react";
-import {change_user_info, change_user_password, deleteUser, getUser, logoutUser} from "@/utils/auth";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
 import {App, Button, Divider, Form, FormInstance, Input, List, Modal} from "antd";
 import styles from "./profile.module.css";
 import AuthContext, {AuthContextType} from "@/context/auth";
-import {DATE_FORMAT, FIRST_NAME_RULES, LAST_NAME_RULES, PASSWORD_RULES} from "@/config";
+import {
+    DATE_FORMAT,
+    FIRST_NAME_RULES,
+    LAST_NAME_RULES,
+    MESSAGE_DURATION,
+    PASSWORD_LENGTH,
+    PASSWORD_RULES,
+    SMALL_TEXT_MAX_LENGTH
+} from "@/config";
 import moment from "moment";
 import Link from "next/link";
-import {router} from "next/client";
+import {MessageInstance} from "antd/es/message/interface";
+import {change_user_info, change_user_password, deleteUser} from "@/utils/user";
+import {getUserOrLogout, logoutUser} from "@/utils/client_auth";
+import {UserDataType} from "@/utils/auth";
+import {getFormErrors} from "@/utils/form";
 
 type FirstNameFields = {
     first_name: string;
@@ -34,6 +45,7 @@ type ModalProps = {
     open: boolean;
     onCancel: () => void;
     context: AuthContextType;
+    message: MessageInstance
 }
 
 function DeleteForm({onFormInstanceReady}: { onFormInstanceReady: (instance: FormInstance) => void }) {
@@ -54,13 +66,13 @@ function DeleteForm({onFormInstanceReady}: { onFormInstanceReady: (instance: For
                 hasFeedback
                 rules={PASSWORD_RULES}
             >
-                <Input.Password/>
+                <Input.Password maxLength={PASSWORD_LENGTH.max}/>
             </Form.Item>
         </Form>
     )
 }
 
-function DeleteModal({open, onCancel, context}: ModalProps) {
+function DeleteModal({open, onCancel, context, message}: ModalProps) {
     const [isModalLoading, setIsModalLoading] = useState(false);
     const [formInstance, setFormInstance] = useState<FormInstance<DeleteUserFields>>();
     const router = useRouter();
@@ -78,16 +90,15 @@ function DeleteModal({open, onCancel, context}: ModalProps) {
                 try {
                     const values = await formInstance?.validateFields();
                     formInstance?.resetFields();
-                    if (!context.user?.token) return;
-                    if (await deleteUser(context.user.token, values!.current_password)) {
-                        context.setUser(null);
-                        await logoutUser();
-                        router.push('/login');
+                    const token = (await getUserOrLogout(context, router))?.token;
+                    if (await deleteUser(token!, values!.current_password)) {
+                        message.success('Ваш аккаунт удалён', MESSAGE_DURATION);
+                        await logoutUser(context, router);
                     } else {
                         formInstance?.setFields([
                             {
                                 name: 'current_password',
-                                errors: ['Неправильный пароль']
+                                errors: ['Неверный пароль']
                             }
                         ]);
                     }
@@ -125,11 +136,8 @@ export default function ProfilePage() {
     const [isUserLoading, setIsUserLoading] = useState(true);
 
     useEffect(() => {
-        getUser().then(r => {
-            if (!r) {
-                context.setUser(null);
-                router.push('/login');
-            } else {
+        getUserOrLogout(context, router).then(r => {
+            if (r) {
                 setIsUserLoading(false);
             }
         });
@@ -164,30 +172,20 @@ export default function ProfilePage() {
                         layout="inline"
                         form={formFirstName}
                         initialValues={{'first_name': context.user?.first_name}}
-                        onFinish={() => {
+                        onFinish={async (values) => {
                             setIsChangeFirstNameLoading(true);
-                            getUser().then(get_user => {
-                                change_user_info(
-                                    get_user!.token,
-                                    formFirstName.getFieldValue('first_name')
-                                ).then(r => {
-                                    setIsChangeFirstNameLoading(false);
-                                    if (!r) {
-                                        message.error('Ошибка');
-                                    } else {
-                                        message.success('Имя изменено');
-                                        setIsFirstNameDiff(true);
-                                        context.setUser(Object.assign(
-                                            {},
-                                            Object.assign(
-                                                get_user!,
-                                                {
-                                                    first_name: formFirstName.getFieldValue('first_name')
-                                                }
-                                            )));
-                                    }
-                                });
-                            });
+                            const get_user = await getUserOrLogout(context, router);
+                            const result = await change_user_info(
+                                get_user!.token,
+                                values
+                            );
+                            setIsChangeFirstNameLoading(false);
+                            if (!result) {
+                                message.error('Ошибка', MESSAGE_DURATION);
+                            } else {
+                                setIsFirstNameDiff(true);
+                                context.setUser({...get_user, first_name: values.first_name} as UserDataType);
+                            }
                         }}
                     >
                         <Form.Item<FirstNameFields>
@@ -198,6 +196,7 @@ export default function ProfilePage() {
                                 onChange={(e) => {
                                     setIsFirstNameDiff(e.target.value === context.user?.first_name);
                                 }}
+                                maxLength={SMALL_TEXT_MAX_LENGTH}
                             />
                         </Form.Item>
                         <Form.Item>
@@ -219,31 +218,20 @@ export default function ProfilePage() {
                         layout="inline"
                         form={formLastName}
                         initialValues={{'last_name': context.user?.last_name}}
-                        onFinish={() => {
+                        onFinish={async (values) => {
                             setIsChangeLastNameLoading(true);
-                            getUser().then(get_user => {
-                                change_user_info(
-                                    get_user!.token,
-                                    get_user!.first_name,
-                                    formLastName.getFieldValue('last_name')
-                                ).then(r => {
-                                    setIsChangeLastNameLoading(false);
-                                    if (!r) {
-                                        message.error('Ошибка');
-                                    } else {
-                                        message.success('Фамилия изменена');
-                                        setIsLastNameDiff(true);
-                                        context.setUser(Object.assign(
-                                            {},
-                                            Object.assign(
-                                                get_user!,
-                                                {
-                                                    last_name: formLastName.getFieldValue('last_name')
-                                                }
-                                            )));
-                                    }
-                                });
-                            });
+                            const get_user = await getUserOrLogout(context, router);
+                            const result = await change_user_info(
+                                get_user!.token,
+                                values
+                            );
+                            setIsChangeLastNameLoading(false);
+                            if (!result) {
+                                message.error('Ошибка', MESSAGE_DURATION);
+                            } else {
+                                setIsLastNameDiff(true);
+                                context.setUser({...get_user, last_name: values.last_name} as UserDataType);
+                            }
                         }}
                     >
                         <Form.Item<LastNameFields>
@@ -254,6 +242,7 @@ export default function ProfilePage() {
                                 onChange={(e) => {
                                     setIsLastNameDiff(e.target.value === context.user?.last_name);
                                 }}
+                                maxLength={SMALL_TEXT_MAX_LENGTH}
                             />
                         </Form.Item>
                         <Form.Item>
@@ -273,30 +262,20 @@ export default function ProfilePage() {
                     <Form
                         form={formChangePassword}
                         className={styles.form}
-                        onFinish={(values) => {
+                        onFinish={async (values) => {
                             setIsChangePasswordLoading(true);
-                            getUser().then(get_user => {
-                                change_user_password(
-                                    values.new_password,
-                                    values.re_new_password,
-                                    values.current_password,
-                                    get_user!.token
-                                ).then(r => {
-                                    setIsChangePasswordLoading(false);
-                                    if (r) {
-                                        const key = Object.keys(r)[0];
-                                        formChangePassword.setFields([
-                                            {
-                                                name: key,
-                                                errors: r[key]
-                                            }
-                                        ]);
-                                    } else {
-                                        message.success('Пароль изменён');
-                                        formChangePassword.resetFields();
-                                    }
-                                });
-                            });
+                            const get_user = await getUserOrLogout(context, router);
+                            const result = await change_user_password(
+                                values,
+                                get_user!.token
+                            );
+                            setIsChangePasswordLoading(false);
+                            if (result) {
+                                getFormErrors(result, formChangePassword);
+                            } else {
+                                message.success('Пароль изменён', MESSAGE_DURATION);
+                                formChangePassword.resetFields();
+                            }
                         }}
                     >
                         <Form.Item<ChangePasswordFields>
@@ -304,7 +283,7 @@ export default function ProfilePage() {
                             hasFeedback
                             rules={PASSWORD_RULES}
                         >
-                            <Input.Password placeholder="Текущий пароль"/>
+                            <Input.Password placeholder="Текущий пароль" maxLength={PASSWORD_LENGTH.max}/>
                         </Form.Item>
 
                         <Form.Item<ChangePasswordFields>
@@ -312,7 +291,7 @@ export default function ProfilePage() {
                             hasFeedback
                             rules={PASSWORD_RULES}
                         >
-                            <Input.Password placeholder="Новый пароль"/>
+                            <Input.Password placeholder="Новый пароль" maxLength={PASSWORD_LENGTH.max}/>
                         </Form.Item>
 
                         <Form.Item<ChangePasswordFields>
@@ -335,7 +314,7 @@ export default function ProfilePage() {
                                 )
                             ]}
                         >
-                            <Input.Password placeholder="Повторите новый пароль"/>
+                            <Input.Password placeholder="Повторите новый пароль" maxLength={PASSWORD_LENGTH.max}/>
                         </Form.Item>
 
                         <Form.Item>
@@ -364,6 +343,7 @@ export default function ProfilePage() {
                 open={openModal}
                 onCancel={() => setOpenModal(false)}
                 context={context}
+                message={message}
             />
         </div>
     )

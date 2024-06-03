@@ -26,6 +26,12 @@ class SearchVacancyResultSerializer(ModelSerializer):
 class ResumeSerializer(CountryFieldMixin, ModelSerializer):
     class Meta:
         model = Resume
+        exclude = ['user']
+
+
+class ResumeCreateSerializer(CountryFieldMixin, ModelSerializer):
+    class Meta:
+        model = Resume
         fields = '__all__'
 
 
@@ -38,7 +44,7 @@ class UpdateResumeSerializer(CountryFieldMixin, ModelSerializer):
 class VacancySerializer(ModelSerializer):
     class Meta:
         model = Vacancy
-        fields = '__all__'
+        exclude = ['user']
 
 
 class UpdateVacancySerializer(ModelSerializer):
@@ -50,4 +56,4 @@ class UpdateVacancySerializer(ModelSerializer):
 class FeedbackSerializer(ModelSerializer):
     class Meta:
         model = Feedback
-        fields = '__all__'
+        exclude = ['resume']

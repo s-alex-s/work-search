@@ -1,0 +1,19 @@
+.create_resume_form {
+    max-width: 600px;
+}
+
+.listItem {
+    width: 100%;
+}
+
+.label {
+    margin-right: 20px;
+}
+
+.text {
+    width: 338px !important;
+}
+
+.text_area_item {
+    padding-bottom: 30px !important;
+}
