@@ -3,7 +3,7 @@
 import {useContext, useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
-import {App, Button, Divider, Form, FormInstance, Input, List, Modal} from "antd";
+import {App, Button, Divider, Form, Input, List, Modal} from "antd";
 import styles from "./profile.module.css";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {
@@ -17,7 +17,6 @@ import {
 } from "@/config";
 import moment from "moment";
 import Link from "next/link";
-import {MessageInstance} from "antd/es/message/interface";
 import {change_user_info, change_user_password, deleteUser} from "@/utils/user";
 import {getUserOrLogout, logoutUser} from "@/utils/client_auth";
 import {UserDataType} from "@/utils/auth";
@@ -41,81 +40,6 @@ type DeleteUserFields = {
     current_password: string;
 }
 
-type ModalProps = {
-    open: boolean;
-    onCancel: () => void;
-    context: AuthContextType;
-    message: MessageInstance
-}
-
-function DeleteForm({onFormInstanceReady}: { onFormInstanceReady: (instance: FormInstance) => void }) {
-    const [form] = Form.useForm<DeleteUserFields>();
-
-    useEffect(() => {
-        onFormInstanceReady(form);
-    }, []);
-
-    return (
-        <Form
-            layout="vertical"
-            form={form}
-        >
-            <Form.Item<DeleteUserFields>
-                name="current_password"
-                label="Введите текущий пароль"
-                hasFeedback
-                rules={PASSWORD_RULES}
-            >
-                <Input.Password maxLength={PASSWORD_LENGTH.max}/>
-            </Form.Item>
-        </Form>
-    )
-}
-
-function DeleteModal({open, onCancel, context, message}: ModalProps) {
-    const [isModalLoading, setIsModalLoading] = useState(false);
-    const [formInstance, setFormInstance] = useState<FormInstance<DeleteUserFields>>();
-    const router = useRouter();
-
-    return (
-        <Modal
-            title="Удаление аккаунта"
-            open={open}
-            confirmLoading={isModalLoading}
-            okText="Удалить"
-            onCancel={onCancel}
-            destroyOnClose
-            onOk={async () => {
-                setIsModalLoading(true);
-                try {
-                    const values = await formInstance?.validateFields();
-                    formInstance?.resetFields();
-                    const token = (await getUserOrLogout(context, router))?.token;
-                    if (await deleteUser(token!, values!.current_password)) {
-                        message.success('Ваш аккаунт удалён', MESSAGE_DURATION);
-                        await logoutUser(context, router);
-                    } else {
-                        formInstance?.setFields([
-                            {
-                                name: 'current_password',
-                                errors: ['Неверный пароль']
-                            }
-                        ]);
-                    }
-                } catch (error) {
-                }
-                setIsModalLoading(false);
-            }}
-        >
-            <DeleteForm
-                onFormInstanceReady={(instance) => {
-                    setFormInstance(instance);
-                }}
-            />
-        </Modal>
-    )
-}
-
 export default function ProfilePage() {
     const context = useContext(AuthContext) as AuthContextType;
     const router = useRouter();
@@ -123,8 +47,10 @@ export default function ProfilePage() {
     const [formFirstName] = Form.useForm<FirstNameFields>();
     const [formLastName] = Form.useForm<LastNameFields>();
     const [formChangePassword] = Form.useForm<ChangePasswordFields>();
+    const [formDeleteUser] = Form.useForm<DeleteUserFields>();
 
     const [openModal, setOpenModal] = useState(false);
+    const [isModalLoading, setIsModalLoading] = useState(false);
 
     const [isChangePasswordLoading, setIsChangePasswordLoading] = useState(false);
     const [isChangeFirstNameLoading, setIsChangeFirstNameLoading] = useState(false);
@@ -171,7 +97,7 @@ export default function ProfilePage() {
                     <Form
                         layout="inline"
                         form={formFirstName}
-                        initialValues={{'first_name': context.user?.first_name}}
+                        initialValues={{first_name: context.user?.first_name}}
                         onFinish={async (values) => {
                             setIsChangeFirstNameLoading(true);
                             const get_user = await getUserOrLogout(context, router);
@@ -217,7 +143,7 @@ export default function ProfilePage() {
                     <Form
                         layout="inline"
                         form={formLastName}
-                        initialValues={{'last_name': context.user?.last_name}}
+                        initialValues={{last_name: context.user?.last_name}}
                         onFinish={async (values) => {
                             setIsChangeLastNameLoading(true);
                             const get_user = await getUserOrLogout(context, router);
@@ -339,12 +265,53 @@ export default function ProfilePage() {
                 </Link>
             </Divider>
 
-            <DeleteModal
+            <Modal
                 open={openModal}
+                confirmLoading={isModalLoading}
+                title="Удаление аккаунта"
+                okText="Удалить"
+                cancelText="Отмена"
+                okButtonProps={{autoFocus: true, htmlType: 'submit'}}
+                destroyOnClose
                 onCancel={() => setOpenModal(false)}
-                context={context}
-                message={message}
-            />
+                modalRender={(dom) => (
+                    <Form
+                        layout="vertical"
+                        form={formDeleteUser}
+                        onFinish={async (values) => {
+                            setIsModalLoading(true);
+                            try {
+                                const token = (await getUserOrLogout(context, router))?.token;
+                                if (await deleteUser(token!, values!.current_password)) {
+                                    message.success('Ваш аккаунт удалён', MESSAGE_DURATION);
+                                    await logoutUser(context, router);
+                                } else {
+                                    formDeleteUser?.setFields([
+                                        {
+                                            name: 'current_password',
+                                            errors: ['Неверный пароль']
+                                        }
+                                    ]);
+                                }
+                            } catch (error) {
+                            }
+                            setIsModalLoading(false);
+                            setOpenModal(false);
+                        }}
+                    >
+                        {dom}
+                    </Form>
+                )}
+            >
+                <Form.Item<DeleteUserFields>
+                    name="current_password"
+                    label="Введите текущий пароль"
+                    hasFeedback
+                    rules={PASSWORD_RULES}
+                >
+                    <Input.Password maxLength={PASSWORD_LENGTH.max}/>
+                </Form.Item>
+            </Modal>
         </div>
     )
 }

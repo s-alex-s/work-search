@@ -1,13 +1,14 @@
 import {Rule, RuleObject} from "rc-field-form/es/interface";
 import {isValidPhoneNumber} from "libphonenumber-js";
+import {DefaultOptionType} from "rc-select/es/Select";
 
-export const ACCESS_TOKEN_LIFETIME = 60_000 * 5;
-export const REFRESH_TOKEN_LIFETIME = 60_000 * 60 * 24;
+export const ACCESS_TOKEN_LIFETIME = 60_000 * 10;
+export const REFRESH_TOKEN_LIFETIME = 60_000 * 60 * 24 * 2;
 export const DEFAULT_LIFETIME = 60_000 * 60 * 24 * 30;
 
 export const PASSWORD_LENGTH = {
     min: 8,
-    max: 50,
+    max: 128,
 };
 
 export const PHONE_NUMBER_LENGTH = {
@@ -134,6 +135,16 @@ export const LAST_NAME_RULES = [
         }
     )
 ] as Rule[];
+
+export const CURRENCIES = [
+    {label: '₸', value: 'KZT'},
+    {label: '₽', value: 'RUB'},
+    {label: '¥', value: 'CNY'},
+    {label: '$', value: 'USD'},
+    {label: '€', value: 'EUR'},
+] as DefaultOptionType[];
+
+export const CURRENCY_LENGTH = 10;
 
 const COUNTRIES_UNORDERED = {
     "AF": "Афганистан",

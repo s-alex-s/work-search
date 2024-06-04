@@ -18,7 +18,7 @@ export async function deleteUser(token: string, current_password: string): Promi
     return response.ok;
 }
 
-export async function retrieveUserData(access: string): Promise<UserDataType> {
+export async function retrieveUserData(access: string): Promise<UserDataType | null> {
     let user_data = await fetch(
         'http://localhost:8000/api/auth/users/me/',
         {
@@ -29,7 +29,9 @@ export async function retrieveUserData(access: string): Promise<UserDataType> {
             }
         }
     );
-    return {...await user_data.json(), token: access};
+
+    if (user_data.ok) return {...await user_data.json(), token: access};
+    return null;
 }
 
 export async function reset_password(email: string) {

@@ -47,6 +47,9 @@ export default async function RootLayout({children,}: Readonly<{ children: React
                             },
                             Divider: {
                                 colorSplit: '#d9d9d9',
+                            },
+                            Card: {
+                                colorBorderSecondary: '#b5b5b5'
                             }
                         }
                     }}>

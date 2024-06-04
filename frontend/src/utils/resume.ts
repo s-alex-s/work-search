@@ -13,15 +13,15 @@ export type ResumeType = {
 };
 
 export type ResumeFormType = {
-    phone_number: string,
-    countryCode: string,
-    additional_contacts: string,
+    phone_number?: string,
+    countryCode?: string,
+    additional_contacts?: string,
     profession: string,
-    busyness: string,
-    languages: string,
-    education: string,
-    country: string,
-    work_experience: string
+    busyness?: string,
+    languages?: string,
+    education?: string,
+    country?: string,
+    work_experience?: string
 };
 
 export type ResumeChangeType = {

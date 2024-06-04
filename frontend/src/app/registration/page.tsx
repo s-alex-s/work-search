@@ -83,6 +83,10 @@ function Success({email}: { email: string }) {
         }, seconds * 1000);
     }
 
+    useEffect(() => {
+        success();
+    }, []);
+
     return <Result
         status="success"
         title="Аккаунт успешно зарегистрирован! Осталось его активировать"

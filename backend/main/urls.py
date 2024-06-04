@@ -1,7 +1,7 @@
 from django.urls import path
 
 from main.views import ForgotUsernameView, CreateResumeView, GetUpdateDeleteResumeView, GetUpdateDeleteVacancyView, \
-    CreateVacancyView, SearchVacancyView, CreateFeedbackView, DeleteFeedbackView, GetFeedbacksView
+    CreateVacancyView, SearchVacancyView, CreateFeedbackView, DeleteFeedbackView, GetFeedbacksView, GetVacancies
 
 urlpatterns = [
     path('auth/users/forgot_username/', ForgotUsernameView.as_view(), name='forgot_username'),
@@ -9,9 +9,10 @@ urlpatterns = [
     path('resume/create/', CreateResumeView.as_view(), name='create_resume'),
     path('resume/', GetUpdateDeleteResumeView.as_view(), name='edit_resume'),
 
-    path('vacancy/create/', CreateVacancyView.as_view(), name='create_vacancy'),
+    path('vacancy/', CreateVacancyView.as_view(), name='create_vacancy'),
     path('vacancy/<int:pk>/', GetUpdateDeleteVacancyView.as_view(), name='edit_vacancy'),
     path('vacancy/search/', SearchVacancyView.as_view(), name='search_vacancy'),
+    path('vacancies/get/', GetVacancies.as_view(), name='get_vacancies'),
 
     path('feedback/create/', CreateFeedbackView.as_view(), name='create_feedback'),
     path('feedback/get/', GetFeedbacksView.as_view(), name='get_feedback'),

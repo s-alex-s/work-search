@@ -17,3 +17,7 @@ a {
     padding: 20px !important;
     border-radius: 18px !important
 }
+
+.ant-card {
+    width: 600px;
+}

@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
-from drf_spectacular.utils import extend_schema, inline_serializer
-from rest_framework import status, serializers
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, ListAPIView, \
     get_object_or_404, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from main.models import CustomUser, Vacancy, Resume, Feedback
 from main.serializers import ForgotUsernameSerializer, ResumeSerializer, UpdateResumeSerializer, VacancySerializer, \
     UpdateVacancySerializer, FeedbackSerializer, SearchVacancyResultSerializer, SearchVacancySerializer, \
-    ResumeCreateSerializer
+    ResumeCreateSerializer, VacancyCreateSerializer
 
 
 class ForgotUsernameView(APIView):
@@ -75,7 +75,7 @@ class GetUpdateDeleteResumeView(RetrieveUpdateAPIView):
 )
 class CreateVacancyView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = VacancySerializer
+    serializer_class = VacancyCreateSerializer
     queryset = Vacancy.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -109,6 +109,17 @@ class GetUpdateDeleteVacancyView(RetrieveUpdateDestroyAPIView):
         if self.get_object().user.pk == self.request.user.pk:
             return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+@extend_schema(
+    tags=['Vacancy']
+)
+class GetVacancies(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = VacancySerializer
+
+    def get_queryset(self):
+        return Vacancy.objects.filter(user=self.request.user.pk)
 
 
 class SearchVacancyView(ListAPIView):
@@ -162,7 +173,6 @@ class DeleteFeedbackView(DestroyAPIView):
 
 @extend_schema(
     tags=['Feedback'],
-    request=inline_serializer('GetFeedbacksSerializer', fields={'user': serializers.IntegerField()}),
     responses={
         status.HTTP_200_OK: FeedbackSerializer(many=True)
     }

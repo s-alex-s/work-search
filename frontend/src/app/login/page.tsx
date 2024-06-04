@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useContext, useEffect, useState} from "react";
-import {Alert, App, Button, Form, FormInstance, Input, Modal, Space} from "antd";
+import {Alert, App, Button, Form, Input, Modal, Space} from "antd";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import {getUser, loginUser, resend_activation_user} from "@/utils/auth";
@@ -22,18 +22,7 @@ type EmailFormType = {
     email: string;
 };
 
-type EmailFormProps = {
-    onFormInstanceReady: (instance: FormInstance<EmailFormType>) => void
-};
-
 type ActionType = 'resend_activation_user' | 'reset_password' | 'forgot_username' | '';
-
-type ModalProps = {
-    open: boolean;
-    onSubmit: (values: ValuesType, actionType: ActionType) => void;
-    onCancel: () => void;
-    actionType: ActionType
-};
 
 type ValuesType = {
     email: string
@@ -45,66 +34,11 @@ type Actions = {
     resend_activation_user: typeof resend_activation_user;
 }
 
-function FormModal({open, onSubmit, onCancel, actionType}: ModalProps) {
-    const [formInstance, setFormInstance] = useState<FormInstance>();
-
-    return (
-        <Modal
-            open={open}
-            title="Введите почту которая привязанна к вашему аккаунту"
-            okText="Отправить"
-            cancelText="Отмена"
-            onCancel={onCancel}
-            destroyOnClose
-            onOk={async () => {
-                try {
-                    const values = await formInstance?.validateFields();
-                    formInstance?.resetFields();
-                    onSubmit(values, actionType);
-                } catch (error) {
-                }
-            }}
-        >
-            <EmailForm onFormInstanceReady={
-                (instance) => {
-                    setFormInstance(instance);
-                }
-            }
-            />
-        </Modal>
-    )
-}
-
-function EmailForm({onFormInstanceReady}: EmailFormProps) {
-    const [form] = Form.useForm<EmailFormType>();
-
-    useEffect(() => {
-        onFormInstanceReady(form);
-    }, []);
-
-    return (
-        <Form
-            className={styles.form}
-            form={form}
-        >
-            <Form.Item<EmailFormType>
-                hasFeedback
-                name="email"
-                rules={[{required: true}, {type: 'email', message: 'Некорректный формат эллектронной почты'}]}
-            >
-                <Input
-                    prefix={<MailOutlined className={styles.login_icon_color}/>}
-                    placeholder="Электронная почта"
-                />
-            </Form.Item>
-        </Form>
-    )
-}
-
 export default function LoginPage() {
     const context = useContext(AuthContext) as AuthContextType;
     const [isLoading, setIsLoading] = useState(false);
     const [form] = Form.useForm<FieldType>();
+    const [formModal] = Form.useForm<EmailFormType>();
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [modalType, setModalType] = useState<ActionType>("");
@@ -227,7 +161,42 @@ export default function LoginPage() {
                     showIcon/> : null}
             </Form>
 
-            <FormModal open={open} actionType={modalType} onSubmit={onSubmit} onCancel={() => setOpen(false)}/>
+            <Modal
+                open={open}
+                title="Введите почту которая привязанна к вашему аккаунту"
+                okText="Отправить"
+                cancelText="Отмена"
+                okButtonProps={{autoFocus: true, htmlType: 'submit'}}
+                onCancel={() => setOpen(false)}
+                destroyOnClose
+                modalRender={(dom) => (
+                    <Form
+                        className={styles.form}
+                        form={formModal}
+                        clearOnDestroy
+                        onFinish={async (values) => {
+                            try {
+                                onSubmit(values, modalType);
+                                setOpen(false)
+                            } catch (error) {
+                            }
+                        }}
+                    >
+                        {dom}
+                    </Form>
+                )}
+            >
+                <Form.Item<EmailFormType>
+                    hasFeedback
+                    name="email"
+                    rules={[{required: true}, {type: 'email', message: 'Некорректный формат эллектронной почты'}]}
+                >
+                    <Input
+                        prefix={<MailOutlined className={styles.login_icon_color}/>}
+                        placeholder="Электронная почта"
+                    />
+                </Form.Item>
+            </Modal>
         </>
     );
 }

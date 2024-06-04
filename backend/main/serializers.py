@@ -47,6 +47,12 @@ class VacancySerializer(ModelSerializer):
         exclude = ['user']
 
 
+class VacancyCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Vacancy
+        fields = '__all__'
+
+
 class UpdateVacancySerializer(ModelSerializer):
     class Meta:
         model = Vacancy
@@ -56,4 +62,4 @@ class UpdateVacancySerializer(ModelSerializer):
 class FeedbackSerializer(ModelSerializer):
     class Meta:
         model = Feedback
-        exclude = ['resume']
+        fields = '__all__'

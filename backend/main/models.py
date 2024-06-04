@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
+from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -39,6 +40,7 @@ class Resume(models.Model):
     class Meta:
         verbose_name = 'Резюме'
         verbose_name_plural = 'Резюме'
+        ordering = ['user__username']
 
     def __str__(self):
         return self.user.username
@@ -48,7 +50,7 @@ class Vacancy(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     title = models.CharField(max_length=250)
-    salary = models.IntegerField(blank=True)
+    salary = MoneyField(max_digits=10, decimal_places=0, blank=True, null=True)
     company = models.CharField(max_length=250)
     requirements = models.TextField(blank=True, max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -57,9 +59,10 @@ class Vacancy(models.Model):
     class Meta:
         verbose_name = 'Вакансия'
         verbose_name_plural = 'Вакансии'
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return f'ID: {self.pk}, {self.title}'
 
 
 class Feedback(models.Model):
@@ -69,6 +72,7 @@ class Feedback(models.Model):
     class Meta:
         verbose_name = 'Отклик'
         verbose_name_plural = 'Отклики'
+        ordering = ['id']
 
     def __str__(self):
         return f'{self.resume.user.username} - {self.vacancy.title}'
