@@ -20,7 +20,7 @@ class SearchVacancySerializer(ModelSerializer):
 class SearchVacancyResultSerializer(ModelSerializer):
     class Meta:
         model = Vacancy
-        exclude = ['requirements', 'created_at', 'description', 'user']
+        exclude = ['requirements', 'description', 'user']
 
 
 class ResumeSerializer(CountryFieldMixin, ModelSerializer):

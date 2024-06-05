@@ -1,14 +1,82 @@
 import moment from "moment/moment";
-import {Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Space} from "antd";
+import {Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Select, Space} from "antd";
 import {change_vacancy, delete_vacancy, VacancyFormType, VacancyType} from "@/utils/vacancy";
 import styles from './vacancy_card.module.css';
-import {CURRENCIES, CURRENCY_LENGTH, MESSAGE_DURATION, SMALL_TEXT_MAX_LENGTH, TEXT_MAX_LENGTH} from "@/config";
+import {
+    COUNTRIES,
+    COUNTRIES_OPTIONS,
+    CURRENCIES,
+    CURRENCY_LENGTH,
+    MESSAGE_DURATION,
+    SMALL_TEXT_MAX_LENGTH,
+    TEXT_MAX_LENGTH
+} from "@/config";
 import {Dispatch, SetStateAction, useState} from "react";
 import {getUserOrLogout} from "@/utils/client_auth";
 import {AuthContextType} from "@/context/auth";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 import {MessageInstance} from "antd/es/message/interface";
 import {currencySelector} from "@/components/currencySelector";
+import {create_feedback} from "@/utils/feedback";
+import {red} from "@ant-design/colors";
+import Link from "next/link";
+
+export function VacancyDataCard(
+    {item, context, router, message}: {
+        item: VacancyType,
+        context: AuthContextType,
+        router: AppRouterInstance,
+        message: MessageInstance
+    }) {
+    const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+
+    return (
+        <>
+            <Card
+                className={styles.card}
+                title={
+                    <Link href={`/vacancies/${item.id}/`} className={styles.link}>
+                        <h2 style={{color: red.primary}}>{item.title}</h2>
+                    </Link>}
+                extra={moment(item.created_at).format("Опубликовано: HH:mm DD.MM.YYYY")}
+            >
+                {item.salary ? <><h3>Зарплата</h3><p>
+                    {item.salary}{CURRENCIES.filter(
+                    value => value.value === item.salary_currency)[0].label}
+                </p></> : 'Уровень дохода не указан'}
+                {item.company ? <><h3>Организация</h3><p>{item.company}</p></> : null}
+                {item.country ? <><h3>Страна</h3><p>{COUNTRIES[item.country]}</p></> : null}
+
+                <Button
+                    style={{float: 'right'}}
+                    type="primary"
+                    disabled={item.feedback}
+                    loading={buttonLoading}
+                    onClick={async () => {
+                        setButtonLoading(true);
+                        const get_user = await getUserOrLogout(context, router);
+                        const feedbackCreate = await create_feedback(
+                            get_user!.token,
+                            {
+                                resume: get_user!.id,
+                                vacancy: item.id
+                            }
+                        );
+                        setButtonLoading(false);
+                        if (feedbackCreate.status) {
+                            item.feedback = true;
+                            message.success('Отклик отправлен', MESSAGE_DURATION);
+                        } else {
+                            message.error('Ошибка', MESSAGE_DURATION);
+                        }
+                    }}
+                >
+                    {item.feedback ? 'Отклик отправлен' : 'Откликнуться'}
+                </Button>
+            </Card>
+        </>
+    )
+}
 
 export default function VacancyCard(
     {item, data, setData, context, router, message}: {
@@ -28,14 +96,15 @@ export default function VacancyCard(
         <>
             <Card
                 className={styles.card}
-                title={item.title}
-                extra={moment(item.created_at).format("Создано: HH:mm DD.MM.YYYY")}
+                title={<h2 style={{margin: 0}}>{item.title}</h2>}
+                extra={moment(item.created_at).format("Опубликовано: HH:mm DD.MM.YYYY")}
             >
                 {item.salary ? <><h3>Зарплата</h3><p>
                     {item.salary}{CURRENCIES.filter(
                     value => value.value === item.salary_currency)[0].label}
-                </p></> : null}
+                </p></> : 'Уровень дохода не указан'}
                 {item.company ? <><h3>Организация</h3><p>{item.company}</p></> : null}
+                {item.country ? <><h3>Страна</h3><p>{COUNTRIES[item.country]}</p></> : null}
                 {item.requirements ? <><h3>Требования</h3><p>{item.requirements}</p></> : null}
                 {item.description ? <><h3>Описание</h3><p>{item.description}</p></> : null}
                 <Space>
@@ -147,6 +216,23 @@ export default function VacancyCard(
                             show: true,
                             max: SMALL_TEXT_MAX_LENGTH
                         }}
+                    />
+                </Form.Item>
+
+                <Form.Item<VacancyFormType>
+                    name="country"
+                    label="Страна"
+                    rules={[{
+                        required: true,
+                        message: 'Укажите страну'
+                    }]}
+                >
+                    <Select
+                        showSearch
+                        placeholder="Выберите страну"
+                        allowClear
+                        options={COUNTRIES_OPTIONS}
+                        optionFilterProp="label"
                     />
                 </Form.Item>
 

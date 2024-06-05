@@ -24,6 +24,7 @@ export const TEXT_MAX_LENGTH = 2000;
 export const SMALL_TEXT_MAX_LENGTH = 250;
 export const USERNAME_LENGTH = 150;
 export const EMAIL_LENGTH = 254;
+export const VACANCY_TITLE_LENGTH = 100;
 
 export const PHONE_NUMBER_RULES = [
     {
@@ -45,7 +46,7 @@ export const PHONE_NUMBER_RULES = [
 export const PASSWORD_RULES = [
     {
         required: true,
-        message: 'Пожалуйста, введите пароль'
+        message: 'Введите пароль'
     },
     {
         ...PASSWORD_LENGTH,
@@ -55,7 +56,7 @@ export const PASSWORD_RULES = [
 export const RE_PASSWORD_RULES = [
     {
         required: true,
-        message: 'Пожалуйста, повторно введите пароль'
+        message: 'Повторно введите пароль'
     },
     ({getFieldValue}) => ({
             validator(_, value) {
@@ -69,7 +70,7 @@ export const RE_PASSWORD_RULES = [
 ] as Rule[];
 
 export const USERNAME_RULES = [
-    {required: true, type: 'string', message: 'Пожалуйста, введите имя пользователя'},
+    {required: true, type: 'string', message: 'Введите имя пользователя'},
     {
         max: USERNAME_LENGTH,
         message: `Длина имени пользователя не должна превышать ${USERNAME_LENGTH} символов`
@@ -106,7 +107,7 @@ export const USER_BIRTH_DATE_RULES = [
 export const FIRST_NAME_RULES = [
     {
         required: true,
-        type: 'string', message: 'Пожалуйста, введите своё имя'
+        type: 'string', message: 'Введите своё имя'
     },
     () => ({
             validator(_, value) {
@@ -123,7 +124,7 @@ export const LAST_NAME_RULES = [
     {
         required: true,
         type: 'string',
-        message: 'Пожалуйста, введите свою фамилию'
+        message: 'Введите свою фамилию'
     },
     () => ({
             validator(_, value) {
@@ -416,7 +417,6 @@ export const COUNTRIES_OPTIONS = Array.from(
     (_, i) => {
         return {
             value: Object.keys(COUNTRIES)[i],
-            // @ts-ignore
             label: COUNTRIES[Object.keys(COUNTRIES)[i]]
         };
     });

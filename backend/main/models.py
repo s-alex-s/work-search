@@ -49,9 +49,10 @@ class Resume(models.Model):
 class Vacancy(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-    title = models.CharField(max_length=250)
+    title = models.CharField(max_length=100)
     salary = MoneyField(max_digits=10, decimal_places=0, blank=True, null=True)
     company = models.CharField(max_length=250)
+    country = CountryField()
     requirements = models.TextField(blank=True, max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, max_length=2000)

@@ -9,12 +9,12 @@ urlpatterns = [
     path('resume/create/', CreateResumeView.as_view(), name='create_resume'),
     path('resume/', GetUpdateDeleteResumeView.as_view(), name='edit_resume'),
 
-    path('vacancy/', CreateVacancyView.as_view(), name='create_vacancy'),
+    path('vacancy/create/', CreateVacancyView.as_view(), name='create_vacancy'),
     path('vacancy/<int:pk>/', GetUpdateDeleteVacancyView.as_view(), name='edit_vacancy'),
     path('vacancy/search/', SearchVacancyView.as_view(), name='search_vacancy'),
-    path('vacancies/get/', GetVacancies.as_view(), name='get_vacancies'),
+    path('vacancy/', GetVacancies.as_view(), name='get_vacancies'),
 
     path('feedback/create/', CreateFeedbackView.as_view(), name='create_feedback'),
-    path('feedback/get/', GetFeedbacksView.as_view(), name='get_feedback'),
+    path('feedback/', GetFeedbacksView.as_view(), name='get_feedback'),
     path('feedback/delete/<int:pk>/', DeleteFeedbackView.as_view(), name='delete_feedback'),
 ]

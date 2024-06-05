@@ -21,3 +21,13 @@ a {
 .ant-card {
     width: 600px;
 }
+
+@media (max-width: 620px) {
+    .ant-card {
+        width: 300px;
+    }
+
+    .ant-card-head-wrapper {
+        flex-direction: column;
+    }
+}

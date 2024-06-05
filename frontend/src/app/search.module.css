@@ -1,0 +1,5 @@
+@media (min-width: 630px) {
+    .search {
+        width: 600px !important;
+    }
+}

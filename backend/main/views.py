@@ -95,6 +95,18 @@ class GetUpdateDeleteVacancyView(RetrieveUpdateDestroyAPIView):
     serializer_class = UpdateVacancySerializer
     queryset = Vacancy.objects.all()
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        data = dict(serializer.data)
+        data['feedback'] = bool(Feedback.objects.filter(
+            resume=self.request.user.pk,
+            vacancy=instance
+        ))
+
+        return Response(data)
+
     def patch(self, request, *args, **kwargs):
         if self.get_object().user.pk == self.request.user.pk:
             return self.partial_update(request, *args, **kwargs)
@@ -119,12 +131,13 @@ class GetVacancies(ListAPIView):
     serializer_class = VacancySerializer
 
     def get_queryset(self):
-        return Vacancy.objects.filter(user=self.request.user.pk)
+        return Vacancy.objects.filter(user=self.request.user)
 
 
 class SearchVacancyView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     http_method_names = ['post']
+    serializer_class = SearchVacancySerializer
 
     @extend_schema(
         tags=['Vacancy'],
@@ -136,8 +149,35 @@ class SearchVacancyView(ListAPIView):
     def post(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = SearchVacancyResultSerializer(page, many=True)
+
+            feedbacks = Feedback.objects.filter(resume=self.request.user.pk)
+            for n, vacancy in enumerate(serializer.data):
+                if feedbacks.filter(vacancy=vacancy['id']):
+                    serializer.data[n]['feedback'] = True
+                else:
+                    serializer.data[n]['feedback'] = False
+
+            return self.get_paginated_response(serializer.data)
+
+        serializer = SearchVacancyResultSerializer(queryset, many=True)
+
+        feedbacks = Feedback.objects.filter(resume=self.request.user.pk)
+        for n, vacancy in enumerate(serializer.data):
+            if feedbacks.filter(vacancy=vacancy['id']):
+                serializer.data[n]['feedback'] = True
+            else:
+                serializer.data[n]['feedback'] = False
+
+        return Response(serializer.data)
+
     def get_queryset(self):
-        return Vacancy.objects.filter(title__icontains=self.request.data['title'])
+        return Vacancy.objects.exclude(user=self.request.user).filter(title__icontains=self.request.data['title'])
 
 
 @extend_schema(
@@ -147,6 +187,15 @@ class CreateFeedbackView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = FeedbackSerializer
     queryset = Feedback.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        vacancy = Vacancy.objects.get(pk=self.request.data['vacancy'])
+        if vacancy.user != self.request.user.pk and not Feedback.objects.filter(
+                vacancy=vacancy,
+                resume=self.request.user.pk
+        ):
+            return self.create(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     def create(self, request, *args, **kwargs):
         request.data['resume'] = self.request.user.pk

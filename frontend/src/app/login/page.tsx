@@ -167,7 +167,10 @@ export default function LoginPage() {
                 okText="Отправить"
                 cancelText="Отмена"
                 okButtonProps={{autoFocus: true, htmlType: 'submit'}}
-                onCancel={() => setOpen(false)}
+                onCancel={() => {
+                    formModal.resetFields();
+                    setOpen(false);
+                }}
                 destroyOnClose
                 modalRender={(dom) => (
                     <Form

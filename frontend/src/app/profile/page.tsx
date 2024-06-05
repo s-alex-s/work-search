@@ -273,7 +273,10 @@ export default function ProfilePage() {
                 cancelText="Отмена"
                 okButtonProps={{autoFocus: true, htmlType: 'submit'}}
                 destroyOnClose
-                onCancel={() => setOpenModal(false)}
+                onCancel={() => {
+                    formDeleteUser.resetFields();
+                    setOpenModal(false);
+                }}
                 modalRender={(dom) => (
                     <Form
                         layout="vertical"
@@ -296,7 +299,6 @@ export default function ProfilePage() {
                             } catch (error) {
                             }
                             setIsModalLoading(false);
-                            setOpenModal(false);
                         }}
                     >
                         {dom}
