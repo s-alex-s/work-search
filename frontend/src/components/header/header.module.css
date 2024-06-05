@@ -4,9 +4,19 @@
     margin-bottom: 50px;
 }
 
+.header_flex {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .header a {
     color: white;
 }
+
+.margin_left {
+    margin-left: auto;
+}
+
 .header a:hover {
     color: #fea4a4 !important;
 }
@@ -15,3 +25,13 @@
     margin-left: 30px;
 }
 
+@media (max-width: 680px) {
+    .header_flex {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .margin_left, .navElement {
+        margin-left: 0;
+    }
+}

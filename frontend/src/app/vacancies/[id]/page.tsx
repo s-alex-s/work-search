@@ -30,7 +30,7 @@ export default function VacancyViewPage({params}: { params: { id: string } }) {
 
     if (isUserLoading) return <Loading/>
     return (
-        <div className="centered_content">
+        <div className="centered_content" style={{paddingBottom: 80}}>
             <VacancyDataCard
                 linkOff={true}
                 item={item!}

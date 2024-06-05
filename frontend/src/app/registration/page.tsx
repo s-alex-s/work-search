@@ -235,7 +235,7 @@ export default function RegistrationPage() {
                 <SubmitButton form={form} loading={buttonLoading}>
                     Зарегистрироваться
                 </SubmitButton>
-                Или <Link href="/login">авторизоваться</Link>
+                Или <Link href="/login">войти</Link>
             </Form.Item>
         </Form>
     );

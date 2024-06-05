@@ -104,6 +104,7 @@ export default function ResumePage() {
         <div className="centered_content">
             <Divider orientation='left'><h2>Резюме</h2></Divider>
             <List
+                style={{marginBottom: 80}}
                 itemLayout="horizontal"
                 bordered
             >

@@ -223,7 +223,7 @@ class CreateFeedbackView(CreateAPIView):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def create(self, request, *args, **kwargs):
-        request.data['resume'] = self.request.user.resume
+        request.data['resume'] = self.request.user.resume.pk
         serializer = FeedbackSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -295,6 +295,11 @@ class GetFeedbacksView(ListAPIView):
 class GetUserFeedbacksView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = FeedbackSerializer
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.has_resume():
+            return self.list(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

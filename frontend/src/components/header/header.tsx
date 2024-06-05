@@ -27,7 +27,7 @@ export default function Header() {
 
     if (!NO_HEADER_PAGES.test(usePathname())) return (
         <header className={styles.header}>
-            <Flex align="center" style={{maxWidth: '1200px', margin: '0 auto'}}>
+            <Flex align="center" className={styles.header_flex}>
                 <Link href={context.user ? '/' : ''}>
                     <svg
                         width="50"
@@ -55,7 +55,7 @@ export default function Header() {
                 <Link href='/vacancies' className={styles.navElement}>{context.user ? 'Мои вакансии' : null}</Link>
                 <Link href='/feedbacks' className={styles.navElement}>{context.user ? 'Отклики' : null}</Link>
 
-                <div style={{marginLeft: 'auto'}}/>
+                <div className={styles.margin_left}/>
 
                 {!context.loading ?
                     context.user ?

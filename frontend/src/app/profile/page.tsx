@@ -253,7 +253,7 @@ export default function ProfilePage() {
                 </List.Item>
             </List>
 
-            <Divider orientation="left">
+            <Divider orientation="left" style={{marginBottom: 80}}>
                 <Link
                     href=""
                     onClick={(e) => {

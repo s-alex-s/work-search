@@ -114,14 +114,16 @@ function FeedbackUser(
         getUserOrLogout(context, router).then(user => {
             if (user) {
                 get_user_feedbacks(user.token, nextLink).then(res => {
-                    res.results.forEach(value => {
-                        if (!data.filter(value1 => value1.id === value.id).length) {
-                            data.push(value);
-                        }
-                    });
-                    setData([...data]);
-                    setCount(res.count);
-                    setNextLink(res.next);
+                    if (res) {
+                        res.results.forEach(value => {
+                            if (!data.filter(value1 => value1.id === value.id).length) {
+                                data.push(value);
+                            }
+                        });
+                        setData([...data]);
+                        setCount(res.count);
+                        setNextLink(res.next);
+                    }
                     setLoading(false);
                 });
             }

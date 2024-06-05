@@ -69,7 +69,7 @@ export async function get_feedbacks(token: string, link?: string): Promise<Feedb
     return await response.json();
 }
 
-export async function get_user_feedbacks(token: string, link?: string): Promise<FeedbackListType> {
+export async function get_user_feedbacks(token: string, link?: string): Promise<FeedbackListType | null> {
     let response = await fetch(
         link ?? 'http://localhost:8000/api/feedback/user/',
         {
@@ -81,5 +81,6 @@ export async function get_user_feedbacks(token: string, link?: string): Promise<
         }
     );
 
-    return await response.json();
+    if (response.ok) return await response.json();
+    return null;
 }
