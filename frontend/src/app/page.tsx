@@ -42,15 +42,20 @@ export default function HomePage() {
         getUserOrLogout(context, router).then(user => {
             if (user && search) {
                 search_vacancies(search, user.token, nextLink).then(res => {
-                    res.results.forEach(value => {
-                        if (!data.filter(value1 => value1.id === value.id).length) {
-                            data.push(value);
-                        }
-                    });
-                    setData([...data]);
-                    setCount(res.count);
-                    setNextLink(res.next);
-                    setLoading(false);
+                    if (res) {
+                        res.results.forEach(value => {
+                            if (!data.filter(value1 => value1.id === value.id).length) {
+                                data.push(value);
+                            }
+                        });
+                        setData([...data]);
+                        setCount(res.count);
+                        setNextLink(res.next);
+                        setLoading(false);
+                    } else {
+                        message.info('Создайте резюме');
+                        router.push('/resume');
+                    }
                 });
             }
             setLoading(false);
@@ -78,14 +83,19 @@ export default function HomePage() {
                                 const user = await getUserOrLogout(context, router);
                                 if (user && value) {
                                     const res = await search_vacancies(value, user.token, nextLink);
-                                    res.results.forEach(value => {
-                                        if (!data_local.filter(value1 => value1.id === value.id).length) {
-                                            data_local.push(value);
-                                        }
-                                    });
-                                    setData([...data_local]);
-                                    setCount(res.count);
-                                    setNextLink(res.next);
+                                    if (res) {
+                                        res.results.forEach(value => {
+                                            if (!data_local.filter(value1 => value1.id === value.id).length) {
+                                                data_local.push(value);
+                                            }
+                                        });
+                                        setData([...data_local]);
+                                        setCount(res.count);
+                                        setNextLink(res.next);
+                                    } else {
+                                        message.info('Создайте резюме');
+                                        router.push('/resume');
+                                    }
                                 }
                                 setLoading(false);
                             }

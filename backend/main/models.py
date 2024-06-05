@@ -24,6 +24,12 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f'ID: {self.pk}, Username: {self.username}'
 
+    def has_resume(self):
+        try:
+            return self.resume is not None
+        except Resume.DoesNotExist:
+            return False
+
 
 class Resume(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)

@@ -170,7 +170,9 @@ class SearchVacancyView(ListAPIView):
         }
     )
     def post(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        if self.request.user.has_resume():
+            return self.list(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -216,7 +218,7 @@ class CreateFeedbackView(CreateAPIView):
         if vacancy.user != self.request.user and not Feedback.objects.filter(
                 vacancy=vacancy,
                 resume=self.request.user.resume
-        ):
+        ) and self.request.user.has_resume():
             return self.create(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -238,6 +240,8 @@ class DeleteFeedbackView(DestroyAPIView):
     serializer_class = FeedbackSerializer
 
     def delete(self, request, *args, **kwargs):
+        if not self.request.user.has_resume():
+            return Response(status=status.HTTP_403_FORBIDDEN)
         if self.get_object().vacancy.user == self.request.user or \
                 self.get_object().resume == self.request.user.resume:
             return self.destroy(request, *args, **kwargs)

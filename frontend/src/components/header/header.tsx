@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {Button, Dropdown, Flex, MenuProps, Spin} from "antd";
+import {Dropdown, Flex, MenuProps, Spin} from "antd";
 import React, {useContext} from "react";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {LoadingOutlined} from "@ant-design/icons";
@@ -28,7 +28,7 @@ export default function Header() {
     if (!NO_HEADER_PAGES.test(usePathname())) return (
         <header className={styles.header}>
             <Flex align="center" style={{maxWidth: '1200px', margin: '0 auto'}}>
-                <Link href='/'>
+                <Link href={context.user ? '/' : ''}>
                     <svg
                         width="50"
                         height="50"
@@ -51,9 +51,9 @@ export default function Header() {
                     </svg>
                 </Link>
 
-                <Link href='/resume' className={styles.navElement}>Моё резюме</Link>
-                <Link href='/vacancies' className={styles.navElement}>Мои вакансии</Link>
-                <Link href='/feedbacks' className={styles.navElement}>Отклики</Link>
+                <Link href='/resume' className={styles.navElement}>{context.user ? 'Моё резюме' : null}</Link>
+                <Link href='/vacancies' className={styles.navElement}>{context.user ? 'Мои вакансии' : null}</Link>
+                <Link href='/feedbacks' className={styles.navElement}>{context.user ? 'Отклики' : null}</Link>
 
                 <div style={{marginLeft: 'auto'}}/>
 
@@ -69,8 +69,7 @@ export default function Header() {
                             >
                                 {context.user.first_name} {context.user.last_name}
                             </a>
-                        </Dropdown> :
-                        <Link href="/login"><Button type="primary">Войти</Button></Link> :
+                        </Dropdown> : null :
                     <Spin indicator={<LoadingOutlined spin style={{fontSize: 32}}/>}/>}
             </Flex>
         </header>

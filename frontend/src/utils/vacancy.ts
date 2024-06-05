@@ -121,7 +121,7 @@ export async function change_vacancy(token: string, data: VacancyEditType):
     return {response: await response.json(), status: response.ok};
 }
 
-export async function search_vacancies(title: string, token: string, link?: string): Promise<VacancyListType> {
+export async function search_vacancies(title: string, token: string, link?: string): Promise<VacancyListType | null> {
     let response = await fetch(
         link ?? 'http://localhost:8000/api/vacancy/search/',
         {
@@ -134,5 +134,6 @@ export async function search_vacancies(title: string, token: string, link?: stri
         }
     );
 
-    return await response.json();
+    if (response.ok) return await response.json();
+    return null;
 }
