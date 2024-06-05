@@ -69,11 +69,12 @@ class Vacancy(models.Model):
 class Feedback(models.Model):
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Отклик'
         verbose_name_plural = 'Отклики'
-        ordering = ['id']
+        ordering = ['-created_at']
 
     def __str__(self):
         return f'{self.resume.user.username} - {self.vacancy.title}'

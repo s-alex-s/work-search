@@ -3,14 +3,22 @@
 export type FeedbackType = {
     id?: number,
     resume: number,
-    vacancy: number
+    vacancy: number,
+    created_at?: string
 };
 
 export type FeedbackListType = {
     count: number,
     next: string,
     previous: string,
-    results: FeedbackType[]
+    results: FeedbackGetType[]
+};
+
+export type FeedbackGetType = {
+    id: number,
+    resume: { id: number, name: string },
+    vacancy: { id: number, title: string },
+    created_at?: string
 };
 
 export async function create_feedback(token: string, data: FeedbackType):
@@ -49,6 +57,21 @@ export async function delete_feedback(token: string, id: number): Promise<boolea
 export async function get_feedbacks(token: string, link?: string): Promise<FeedbackListType> {
     let response = await fetch(
         link ?? 'http://localhost:8000/api/feedback/',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'JWT ' + token
+            }
+        }
+    );
+
+    return await response.json();
+}
+
+export async function get_user_feedbacks(token: string, link?: string): Promise<FeedbackListType> {
+    let response = await fetch(
+        link ?? 'http://localhost:8000/api/feedback/user/',
         {
             method: 'GET',
             headers: {

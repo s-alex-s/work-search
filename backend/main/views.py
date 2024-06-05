@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, ListAPIView, \
-    get_object_or_404, RetrieveUpdateDestroyAPIView
+    get_object_or_404, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -68,6 +68,29 @@ class GetUpdateDeleteResumeView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return get_object_or_404(Resume, user=self.request.user)
+
+
+@extend_schema(
+    tags=['Resume']
+)
+class GetResumeView(RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ResumeSerializer
+    queryset = Resume.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        if Feedback.objects.filter(vacancy__user=self.request.user, resume=kwargs['pk']):
+            return self.retrieve(request, *args, **kwargs)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        data = dict(serializer.data)
+        data['username'] = f'{instance.user.first_name} {instance.user.last_name}'
+
+        return Response(data)
 
 
 @extend_schema(
@@ -215,7 +238,8 @@ class DeleteFeedbackView(DestroyAPIView):
     serializer_class = FeedbackSerializer
 
     def delete(self, request, *args, **kwargs):
-        if self.get_object().vacancy.user.pk == self.request.user.pk:
+        if self.get_object().vacancy.user.pk == self.request.user.pk or \
+                self.get_object().resume.pk == self.request.user.pk:
             return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -228,6 +252,63 @@ class DeleteFeedbackView(DestroyAPIView):
 )
 class GetFeedbacksView(ListAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = FeedbackSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            for n, feedback in enumerate(serializer.data):
+                serializer.data[n]['vacancy'] = {
+                    'id': feedback['vacancy'],
+                    'title': Vacancy.objects.get(pk=feedback['vacancy']).title
+                }
+
+                resume = Resume.objects.get(pk=serializer.data[n]['resume'])
+                serializer.data[n]['resume'] = {
+                    'id': serializer.data[n]['resume'],
+                    'name': f'{resume.user.first_name} {resume.user.last_name}'
+                }
+
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         return Feedback.objects.filter(vacancy__user=self.request.user)
+
+
+@extend_schema(
+    tags=['Feedback'],
+    responses={
+        status.HTTP_200_OK: FeedbackSerializer(many=True)
+    }
+)
+class GetUserFeedbacksView(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FeedbackSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            for n, feedback in enumerate(serializer.data):
+                serializer.data[n]['vacancy'] = {
+                    'id': feedback['vacancy'],
+                    'title': Vacancy.objects.get(pk=feedback['vacancy']).title
+                }
+
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        return Feedback.objects.filter(resume=self.request.user.pk)

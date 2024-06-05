@@ -2,8 +2,16 @@
     max-width: 600px;
 }
 
+.view_resume_list {
+    width: 800px;
+}
+
 .listItem {
     width: 100%;
+}
+
+.listItem p {
+    white-space: pre-wrap;
 }
 
 .label {
@@ -16,4 +24,10 @@
 
 .text_area_item {
     padding-bottom: 30px !important;
+}
+
+@media (max-width: 820px) {
+    .view_resume_list {
+        width: 100%;
+    }
 }

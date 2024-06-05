@@ -12,6 +12,19 @@ export type ResumeType = {
     work_experience: string,
 };
 
+export type ResumeGetType = {
+    id: number,
+    phone_number: string,
+    additional_contacts: string,
+    profession: string,
+    busyness: string,
+    languages: string,
+    education: string,
+    country: string,
+    work_experience: string,
+    username: string
+};
+
 export type ResumeFormType = {
     phone_number?: string,
     countryCode?: string,
@@ -38,6 +51,21 @@ export type ResumeChangeType = {
 export async function get_resume(token: string): Promise<ResumeType | null> {
     let response = await fetch(
         'http://localhost:8000/api/resume/',
+        {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'JWT ' + token
+            }
+        }
+    );
+    if (response.ok) return await response.json();
+    return null;
+}
+
+export async function get_resume_id(token: string, id: string): Promise<ResumeGetType | null> {
+    let response = await fetch(
+        `http://localhost:8000/api/resume/${id}/`,
         {
             method: "GET",
             headers: {

@@ -32,6 +32,7 @@ export default function VacancyViewPage({params}: { params: { id: string } }) {
     return (
         <div className="centered_content">
             <VacancyDataCard
+                linkOff={true}
                 item={item!}
                 context={context}
                 router={router}
@@ -39,10 +40,10 @@ export default function VacancyViewPage({params}: { params: { id: string } }) {
             />
 
             {item!.requirements ? <><h2>Требования</h2>
-                <p>{item!.requirements}</p></> : null}
+                <p style={{whiteSpace: 'pre-wrap'}}>{item!.requirements}</p></> : null}
 
             {item!.description ? <><h2>Описание</h2>
-                <p>{item!.description}</p></> : null}
+                <p style={{whiteSpace: 'pre-wrap'}}>{item!.description}</p></> : null}
 
             <FloatButton.BackTop/>
         </div>

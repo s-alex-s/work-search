@@ -1,7 +1,7 @@
 import moment from "moment/moment";
 import {Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Select, Space} from "antd";
 import {change_vacancy, delete_vacancy, VacancyFormType, VacancyType} from "@/utils/vacancy";
-import styles from './vacancy_card.module.css';
+import styles from './vacancy-card.module.css';
 import {
     COUNTRIES,
     COUNTRIES_OPTIONS,
@@ -22,11 +22,12 @@ import {red} from "@ant-design/colors";
 import Link from "next/link";
 
 export function VacancyDataCard(
-    {item, context, router, message}: {
+    {item, context, router, message, linkOff = false}: {
         item: VacancyType,
         context: AuthContextType,
         router: AppRouterInstance,
-        message: MessageInstance
+        message: MessageInstance,
+        linkOff?: boolean
     }) {
     const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
@@ -35,9 +36,10 @@ export function VacancyDataCard(
             <Card
                 className={styles.card}
                 title={
-                    <Link href={`/vacancies/${item.id}/`} className={styles.link}>
-                        <h2 style={{color: red.primary}}>{item.title}</h2>
-                    </Link>}
+                    linkOff ? <h2 className={styles.link}>{item.title}</h2> :
+                        <Link href={`/vacancies/${item.id}/`} className={styles.link} style={{color: red.primary}}>
+                            <h2>{item.title}</h2>
+                        </Link>}
                 extra={moment(item.created_at).format("Опубликовано: HH:mm DD.MM.YYYY")}
             >
                 {item.salary ? <><h3>Зарплата</h3><p>
