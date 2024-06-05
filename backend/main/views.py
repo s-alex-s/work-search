@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from main.models import CustomUser, Vacancy, Resume, Feedback
 from main.serializers import ForgotUsernameSerializer, ResumeSerializer, UpdateResumeSerializer, VacancySerializer, \
     UpdateVacancySerializer, FeedbackSerializer, SearchVacancyResultSerializer, SearchVacancySerializer, \
-    ResumeCreateSerializer, VacancyCreateSerializer
+    ResumeCreateSerializer, VacancyCreateSerializer, FeedbackCreateSerializer
 
 
 class ForgotUsernameView(APIView):
@@ -124,24 +124,24 @@ class GetUpdateDeleteVacancyView(RetrieveUpdateDestroyAPIView):
 
         data = dict(serializer.data)
         data['feedback'] = bool(Feedback.objects.filter(
-            resume=self.request.user.pk,
+            resume=self.request.user.resume,
             vacancy=instance
         ))
 
         return Response(data)
 
     def patch(self, request, *args, **kwargs):
-        if self.get_object().user.pk == self.request.user.pk:
+        if self.get_object().user == self.request.user:
             return self.partial_update(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def put(self, request, *args, **kwargs):
-        if self.get_object().user.pk == self.request.user.pk:
+        if self.get_object().user == self.request.user:
             return self.update(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
-        if self.get_object().user.pk == self.request.user.pk:
+        if self.get_object().user == self.request.user:
             return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -179,7 +179,7 @@ class SearchVacancyView(ListAPIView):
         if page is not None:
             serializer = SearchVacancyResultSerializer(page, many=True)
 
-            feedbacks = Feedback.objects.filter(resume=self.request.user.pk)
+            feedbacks = Feedback.objects.filter(resume=self.request.user.resume)
             for n, vacancy in enumerate(serializer.data):
                 if feedbacks.filter(vacancy=vacancy['id']):
                     serializer.data[n]['feedback'] = True
@@ -190,7 +190,7 @@ class SearchVacancyView(ListAPIView):
 
         serializer = SearchVacancyResultSerializer(queryset, many=True)
 
-        feedbacks = Feedback.objects.filter(resume=self.request.user.pk)
+        feedbacks = Feedback.objects.filter(resume=self.request.user.resume)
         for n, vacancy in enumerate(serializer.data):
             if feedbacks.filter(vacancy=vacancy['id']):
                 serializer.data[n]['feedback'] = True
@@ -208,21 +208,21 @@ class SearchVacancyView(ListAPIView):
 )
 class CreateFeedbackView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = FeedbackSerializer
+    serializer_class = FeedbackCreateSerializer
     queryset = Feedback.objects.all()
 
     def post(self, request, *args, **kwargs):
         vacancy = Vacancy.objects.get(pk=self.request.data['vacancy'])
-        if vacancy.user != self.request.user.pk and not Feedback.objects.filter(
+        if vacancy.user != self.request.user and not Feedback.objects.filter(
                 vacancy=vacancy,
-                resume=self.request.user.pk
+                resume=self.request.user.resume
         ):
             return self.create(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def create(self, request, *args, **kwargs):
-        request.data['resume'] = self.request.user.pk
-        serializer = self.get_serializer(data=request.data)
+        request.data['resume'] = self.request.user.resume
+        serializer = FeedbackSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -238,8 +238,8 @@ class DeleteFeedbackView(DestroyAPIView):
     serializer_class = FeedbackSerializer
 
     def delete(self, request, *args, **kwargs):
-        if self.get_object().vacancy.user.pk == self.request.user.pk or \
-                self.get_object().resume.pk == self.request.user.pk:
+        if self.get_object().vacancy.user == self.request.user or \
+                self.get_object().resume == self.request.user.resume:
             return self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -311,4 +311,4 @@ class GetUserFeedbacksView(ListAPIView):
         return Response(serializer.data)
 
     def get_queryset(self):
-        return Feedback.objects.filter(resume=self.request.user.pk)
+        return Feedback.objects.filter(resume=self.request.user.resume)

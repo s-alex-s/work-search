@@ -63,3 +63,9 @@ class FeedbackSerializer(ModelSerializer):
     class Meta:
         model = Feedback
         fields = '__all__'
+
+
+class FeedbackCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Feedback
+        exclude = ['resume']

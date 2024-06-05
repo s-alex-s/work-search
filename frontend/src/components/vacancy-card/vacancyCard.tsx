@@ -60,7 +60,6 @@ export function VacancyDataCard(
                         const feedbackCreate = await create_feedback(
                             get_user!.token,
                             {
-                                resume: get_user!.id,
                                 vacancy: item.id
                             }
                         );

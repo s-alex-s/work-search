@@ -21,7 +21,7 @@ export type FeedbackGetType = {
     created_at?: string
 };
 
-export async function create_feedback(token: string, data: FeedbackType):
+export async function create_feedback(token: string, data: { vacancy: number }):
     Promise<{ response: FeedbackType, status: boolean }> {
 
     let response = await fetch(

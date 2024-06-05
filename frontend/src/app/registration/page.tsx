@@ -56,10 +56,11 @@ function Success({email}: { email: string }) {
     const {message} = App.useApp();
     const msg = `На почту ${email} была отправлена ссылка для активации аккаунта`;
     const [isLoading, setIsLoading] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-    const [buttonText, setButtonText] = useState('Отправить ещё раз');
+    const [disabled, setDisabled] = useState(true);
     let seconds = 30;
     let sec_text = 'секунд';
+    let base_text = 'Отправить ещё раз';
+    const [buttonText, setButtonText] = useState(base_text + ` через ${seconds} ${sec_text}`);
 
     function success() {
         message.success('Ссылка отправлена', MESSAGE_DURATION);
@@ -73,12 +74,12 @@ function Success({email}: { email: string }) {
             } else {
                 sec_text = 'секунд';
             }
-            setButtonText(buttonText + ` через ${seconds} ${sec_text}`);
+            setButtonText(base_text + ` через ${seconds} ${sec_text}`);
         }, 1000);
 
         setTimeout(() => {
             clearInterval(timer);
-            setButtonText('Отправить ещё раз');
+            setButtonText(base_text);
             setDisabled(false);
         }, seconds * 1000);
     }

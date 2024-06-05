@@ -6,7 +6,7 @@ import {useState} from "react";
 import {reset_password_confirm} from "@/utils/user";
 import Link from "next/link";
 
-export function Success() {
+function Success() {
     return (
         <Result
             status="success"
