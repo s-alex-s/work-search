@@ -4,6 +4,7 @@ services:
   back:
     env_file: back.env
     build: ./backend
+    restart: always
     depends_on:
       - db
     volumes:
@@ -43,6 +44,7 @@ services:
 
   proxy_front:
     image: nginx
+    restart: always
     volumes:
       - ./nginx/front:/etc/nginx/conf.d
     depends_on:
@@ -53,6 +55,7 @@ services:
 
   proxy_back:
     image: nginx
+    restart: always
     volumes:
       - ./nginx/back:/etc/nginx/conf.d
       - static_data:/backend
