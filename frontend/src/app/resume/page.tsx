@@ -4,13 +4,14 @@ import {useContext, useEffect, useState} from "react";
 import AuthContext, {AuthContextType} from "@/context/auth";
 import {useRouter} from "next/navigation";
 import Loading from "@/app/loading";
-import {change_resume, get_resume, ResumeType} from "@/utils/resume";
+import {change_resume, get_resume, ResumeGetType} from "@/utils/resume";
 import {getUserOrLogout} from "@/utils/client_auth";
 import CreateResumeForm from "@/app/resume/create_resume_form";
 import {Button, Divider, Form, Input, List, Select} from "antd";
 import styles from "@/app/resume/resume.module.css";
 import {
     COUNTRIES_OPTIONS,
+    DATE_FORMAT,
     PHONE_NUMBER_LENGTH,
     PHONE_NUMBER_RULES,
     SMALL_TEXT_MAX_LENGTH,
@@ -19,6 +20,7 @@ import {
 import {parsePhoneNumberWithError} from "libphonenumber-js";
 import {countryCodeSelector} from "@/components/countryCodeSelector";
 import {getFormErrors} from "@/utils/form";
+import moment from "moment/moment";
 
 type PhoneNumberFields = {
     countryCode: string,
@@ -58,7 +60,7 @@ export default function ResumePage() {
     const router = useRouter();
 
     const [isUserLoading, setIsUserLoading] = useState(true);
-    const [resume, setResume] = useState<ResumeType | null>(null);
+    const [resume, setResume] = useState<ResumeGetType | null>(null);
 
     const [formPhoneNumber] = Form.useForm<PhoneNumberFields>();
     const [formAdditionalContacts] = Form.useForm<AdditionalContactsField>();
@@ -108,6 +110,17 @@ export default function ResumePage() {
                 itemLayout="horizontal"
                 bordered
             >
+                <Divider style={{marginBottom: 0}}>
+                    <h2 style={{margin: 0}}>{resume.user_info.first_name} {resume.user_info.last_name}</h2>
+                </Divider>
+                <div style={{textAlign: 'center', lineHeight: 1, marginBottom: 20}}>{resume.user_info.gender === 'm' ?
+                    `Мужчина, ${
+                        moment().diff(moment(resume.user_info.birth_date), 'years')
+                    } лет, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
+                    `Женщина, ${
+                        moment().diff(moment(resume.user_info.birth_date), 'years')
+                    } лет, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
+
                 <List.Item className={styles.listItem}>
                     <h3 className={styles.label}>Номер телефона</h3>
                     <Form
@@ -150,7 +163,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     phone_number: values.phone_number && `+${values.countryCode}${values.phone_number}`
-                                } as ResumeType);
+                                } as ResumeGetType);
                             }
                         }}
                     >
@@ -211,7 +224,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     additional_contacts: values.additional_contacts.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formAdditionalContacts.setFields([{
                                     name: 'additional_contacts',
                                     value: values.additional_contacts.trim()
@@ -272,7 +285,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     profession: values.profession.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formProfession.setFields([{
                                     name: 'profession',
                                     value: values.profession.trim()
@@ -339,7 +352,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     busyness: values.busyness.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formBusyness.setFields([{
                                     name: 'busyness',
                                     value: values.busyness.trim()
@@ -400,7 +413,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     languages: values.languages.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formLanguages.setFields([{
                                     name: 'languages',
                                     value: values.languages.trim()
@@ -461,7 +474,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     education: values.education.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formEducation.setFields([{
                                     name: 'education',
                                     value: values.education.trim()
@@ -522,7 +535,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     country: values.country
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formCountry.setFields([{
                                     name: 'country',
                                     value: values.country
@@ -583,7 +596,7 @@ export default function ResumePage() {
                                 setResume({
                                     ...result.response,
                                     work_experience: values.work_experience.trim()
-                                } as ResumeType);
+                                } as ResumeGetType);
                                 formWorkExperience.setFields([{
                                     name: 'work_experience',
                                     value: values.work_experience.trim()

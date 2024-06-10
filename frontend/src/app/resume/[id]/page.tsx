@@ -6,10 +6,12 @@ import Loading from "@/app/loading";
 import {Divider, Flex, List} from "antd";
 import styles from "../resume.module.css";
 import AuthContext, {AuthContextType} from "@/context/auth";
-import {COUNTRIES} from "@/config";
+import {COUNTRIES, DATE_FORMAT} from "@/config";
 import {getUserOrLogout} from "@/utils/client_auth";
 import {get_resume_id, ResumeGetType} from "@/utils/resume";
-import NotFound from "@/app/not-found";
+import AccessRestrict from "@/app/access-restrict";
+import moment from "moment";
+import "moment/locale/ru";
 
 export default function ProfilePage({params}: { params: { id: string } }) {
     const context = useContext(AuthContext) as AuthContextType;
@@ -41,7 +43,16 @@ export default function ProfilePage({params}: { params: { id: string } }) {
                 itemLayout="horizontal"
                 bordered
             >
-                <Divider><h1>{resume.username}</h1></Divider>
+                <Divider style={{marginBottom: 0}}>
+                    <h1 style={{margin: 0}}>{resume.user_info.first_name} {resume.user_info.last_name}</h1>
+                </Divider>
+                <div style={{textAlign: 'center', lineHeight: 1}}>{resume.user_info.gender === 'm' ?
+                    `Мужчина, ${
+                        moment().diff(moment(resume.user_info.birth_date), 'years')
+                    } лет, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
+                    `Женщина, ${
+                        moment().diff(moment(resume.user_info.birth_date), 'years')
+                    } лет, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
 
                 <List.Item className={styles.listItem}>
                     <Flex vertical>
@@ -101,5 +112,5 @@ export default function ProfilePage({params}: { params: { id: string } }) {
             </List>
         </Flex>
     )
-    return <NotFound/>
+    return <AccessRestrict/>
 }

@@ -1,16 +1,6 @@
 "use server";
 
-export type ResumeType = {
-    id: number,
-    phone_number: string,
-    additional_contacts: string,
-    profession: string,
-    busyness: string,
-    languages: string,
-    education: string,
-    country: string,
-    work_experience: string,
-};
+import {BACKEND_URL} from "@/config";
 
 export type ResumeGetType = {
     id: number,
@@ -22,7 +12,13 @@ export type ResumeGetType = {
     education: string,
     country: string,
     work_experience: string,
-    username: string
+    user_info: {
+        first_name: string,
+        last_name: string,
+        birth_date: string,
+        email: string
+        gender: 'm' | 'f'
+    }
 };
 
 export type ResumeFormType = {
@@ -48,9 +44,9 @@ export type ResumeChangeType = {
     work_experience?: string
 };
 
-export async function get_resume(token: string): Promise<ResumeType | null> {
+export async function get_resume(token: string): Promise<ResumeGetType | null> {
     let response = await fetch(
-        'http://localhost:8000/api/resume/',
+        BACKEND_URL + '/api/resume/',
         {
             method: "GET",
             headers: {
@@ -65,7 +61,7 @@ export async function get_resume(token: string): Promise<ResumeType | null> {
 
 export async function get_resume_id(token: string, id: string): Promise<ResumeGetType | null> {
     let response = await fetch(
-        `http://localhost:8000/api/resume/${id}/`,
+        BACKEND_URL + `/api/resume/${id}/`,
         {
             method: "GET",
             headers: {
@@ -79,9 +75,9 @@ export async function get_resume_id(token: string, id: string): Promise<ResumeGe
 }
 
 export async function create_resume(
-    token: string, resume: ResumeFormType): Promise<{ response: ResumeType, status: boolean }> {
+    token: string, resume: ResumeFormType): Promise<{ response: ResumeGetType, status: boolean }> {
     let response = await fetch(
-        'http://localhost:8000/api/resume/create/',
+        BACKEND_URL + '/api/resume/create/',
         {
             method: "POST",
             headers: {
@@ -101,7 +97,7 @@ export async function change_resume(token: string, resume: ResumeChangeType):
     Promise<{ response: object, status: boolean }> {
 
     let response = await fetch(
-        'http://localhost:8000/api/resume/',
+        BACKEND_URL + '/api/resume/',
         {
             method: "PATCH",
             headers: {

@@ -1,0 +1,66 @@
+version: '1.0'
+
+services:
+  back:
+    env_file: back.env
+    build: ./backend
+    depends_on:
+      - db
+    volumes:
+      - static_data:/backend/static
+    command: sh ./entrypoint.sh
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/backend
+          target: /src/backend
+        - action: sync
+          path: ./backend/main
+          target: /src/main
+        - action: rebuild
+          path: ./backend/requirements.txt
+
+  front:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+        NEXT_PUBLIC_FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
+    restart: always
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: root
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  proxy_front:
+    image: nginx
+    volumes:
+      - ./nginx/front:/etc/nginx/conf.d
+    depends_on:
+      - front
+    ports:
+      - 80:80
+      - 443:443
+
+  proxy_back:
+    image: nginx
+    volumes:
+      - ./nginx/back:/etc/nginx/conf.d
+      - static_data:/backend
+    depends_on:
+      - back
+    ports:
+      - 8000:80
+      - 8001:443
+
+volumes:
+  static_data:

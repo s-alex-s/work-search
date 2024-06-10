@@ -2,6 +2,17 @@ import {Rule, RuleObject} from "rc-field-form/es/interface";
 import {isValidPhoneNumber} from "libphonenumber-js";
 import {DefaultOptionType} from "rc-select/es/Select";
 
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+export const display_salary = (item: { salary: number, salary_currency: string }) => {
+    return new Intl.NumberFormat('', {
+        style: 'currency',
+        currency: item.salary_currency,
+        currencyDisplay: 'narrowSymbol',
+        minimumFractionDigits: 0
+    }).format(item.salary)
+}
+
 export const ACCESS_TOKEN_LIFETIME = 60_000 * 10;
 export const REFRESH_TOKEN_LIFETIME = 60_000 * 60 * 24 * 2;
 export const DEFAULT_LIFETIME = 60_000 * 60 * 24 * 30;
@@ -87,7 +98,7 @@ export const USERNAME_RULES = [
     )
 ] as Rule[];
 
-export const DATE_FORMAT = 'DD.MM.YYYY';
+export const DATE_FORMAT = 'D MMM YYYY';
 export const USER_BIRTH_DATE_RULES = [
     {required: true, message: 'Укажите дату своего рождения'},
     () => ({

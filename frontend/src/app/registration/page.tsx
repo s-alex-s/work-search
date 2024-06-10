@@ -7,7 +7,6 @@ import {getUser, registerUser, resendActivation} from "@/utils/auth";
 import styles from './registration.module.css';
 import Link from "next/link";
 import {
-    DATE_FORMAT,
     EMAIL_LENGTH,
     FIRST_NAME_RULES,
     LAST_NAME_RULES,
@@ -175,7 +174,7 @@ export default function RegistrationPage() {
             >
                 <DatePicker
                     style={{width: '100%'}}
-                    format={DATE_FORMAT}
+                    format={'DD.MM.YYYY'}
                     allowClear={false}
                     placeholder=""
                 />

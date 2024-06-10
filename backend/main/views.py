@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from main.models import CustomUser, Vacancy, Resume, Feedback
 from main.serializers import ForgotUsernameSerializer, ResumeSerializer, UpdateResumeSerializer, VacancySerializer, \
     UpdateVacancySerializer, FeedbackSerializer, SearchVacancyResultSerializer, SearchVacancySerializer, \
-    ResumeCreateSerializer, VacancyCreateSerializer, FeedbackCreateSerializer
+    ResumeCreateSerializer, VacancyCreateSerializer, FeedbackCreateSerializer, UserResumeSerializer
 
 
 class ForgotUsernameView(APIView):
@@ -66,6 +66,32 @@ class GetUpdateDeleteResumeView(RetrieveUpdateAPIView):
     serializer_class = UpdateResumeSerializer
     queryset = Resume.objects.all()
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        data = dict(serializer.data)
+        data['user_info'] = UserResumeSerializer(instance.user).data
+
+        return Response(data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        data = dict(serializer.data)
+        data['user_info'] = UserResumeSerializer(instance.user).data
+
+        return Response(data)
+
     def get_object(self):
         return get_object_or_404(Resume, user=self.request.user)
 
@@ -88,7 +114,7 @@ class GetResumeView(RetrieveAPIView):
         serializer = self.get_serializer(instance)
 
         data = dict(serializer.data)
-        data['username'] = f'{instance.user.first_name} {instance.user.last_name}'
+        data['user_info'] = UserResumeSerializer(instance.user).data
 
         return Response(data)
 

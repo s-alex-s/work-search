@@ -5,8 +5,9 @@ import styles from './vacancy-card.module.css';
 import {
     COUNTRIES,
     COUNTRIES_OPTIONS,
-    CURRENCIES,
     CURRENCY_LENGTH,
+    DATE_FORMAT,
+    display_salary,
     MESSAGE_DURATION,
     SMALL_TEXT_MAX_LENGTH,
     TEXT_MAX_LENGTH
@@ -20,6 +21,7 @@ import {currencySelector} from "@/components/currencySelector";
 import {create_feedback} from "@/utils/feedback";
 import {red} from "@ant-design/colors";
 import Link from "next/link";
+import "moment/locale/ru";
 
 export function VacancyDataCard(
     {item, context, router, message, linkOff = false}: {
@@ -40,12 +42,9 @@ export function VacancyDataCard(
                         <Link href={`/vacancies/${item.id}/`} className={styles.link} style={{color: red.primary}}>
                             <h2>{item.title}</h2>
                         </Link>}
-                extra={moment(item.created_at).format("Опубликовано: HH:mm DD.MM.YYYY")}
+                extra={moment(item.created_at).format(`Опубликовано в HH:mm, ${DATE_FORMAT}`)}
             >
-                {item.salary ? <><h3>Зарплата</h3><p>
-                    {item.salary}{CURRENCIES.filter(
-                    value => value.value === item.salary_currency)[0].label}
-                </p></> : 'Уровень дохода не указан'}
+                {item.salary ? <><h3>Зарплата</h3><p>{display_salary(item)}</p></> : 'Уровень дохода не указан'}
                 {item.company ? <><h3>Организация</h3><p>{item.company}</p></> : null}
                 {item.country ? <><h3>Страна</h3><p>{COUNTRIES[item.country]}</p></> : null}
 
@@ -98,12 +97,9 @@ export default function VacancyCard(
             <Card
                 className={styles.card}
                 title={<h2 style={{margin: 0}}>{item.title}</h2>}
-                extra={moment(item.created_at).format("Опубликовано: HH:mm DD.MM.YYYY")}
+                extra={moment(item.created_at).format(`Опубликовано в HH:mm, ${DATE_FORMAT}`)}
             >
-                {item.salary ? <><h3>Зарплата</h3><p>
-                    {item.salary}{CURRENCIES.filter(
-                    value => value.value === item.salary_currency)[0].label}
-                </p></> : 'Уровень дохода не указан'}
+                {item.salary ? <><h3>Зарплата</h3><p>{display_salary(item)}</p></> : 'Уровень дохода не указан'}
                 {item.company ? <><h3>Организация</h3><p>{item.company}</p></> : null}
                 {item.country ? <><h3>Страна</h3><p>{COUNTRIES[item.country]}</p></> : null}
                 {item.requirements ? <><h3>Требования</h3><p>{item.requirements}</p></> : null}

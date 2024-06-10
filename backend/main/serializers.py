@@ -11,6 +11,12 @@ class ForgotUsernameSerializer(ModelSerializer):
         extra_kwargs = {'email': {'validators': []}}
 
 
+class UserResumeSerializer(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['gender', 'birth_date', 'first_name', 'last_name', 'email']
+
+
 class SearchVacancySerializer(ModelSerializer):
     class Meta:
         model = Vacancy

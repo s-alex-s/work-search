@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)jwt17b*0q6cn-t%^9z!**e(n%5gyio(vfxual^&3wo7p*g2m-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['back']
 
 # Application definition
 
@@ -40,19 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "main.apps.MainConfig",
+    'main.apps.MainConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    "corsheaders",
+    'corsheaders',
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'djmoney',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,7 +61,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('NAME'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT': os.getenv('PORT')
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'USER': 'postgres',
+        'NAME': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432'
     }
 }
 
@@ -131,6 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = "/backend/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -138,7 +139,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    os.getenv('FRONTEND_URL'),
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -168,12 +169,12 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
     'TITLE': 'WorkSearch',
     'DESCRIPTION': 'Сайт для поиска и публикации вакансий (API)',
-    'VERSION': '1.0.0',
+    'VERSION': '2.0.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SCHEMA_PATH_PREFIX': r'/api/auth/users|/api/auth'
 }
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('FRONTEND_DOMAIN')
 SITE_NAME = os.getenv('SITE_NAME')
 
 DJOSER = {

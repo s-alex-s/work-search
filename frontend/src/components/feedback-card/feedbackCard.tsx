@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 import {Button, Card, Flex, Popconfirm, Space} from "antd";
-import {MESSAGE_DURATION} from "@/config";
+import {DATE_FORMAT, MESSAGE_DURATION} from "@/config";
 import {Dispatch, SetStateAction} from "react";
 import {getUserOrLogout} from "@/utils/client_auth";
 import {AuthContextType} from "@/context/auth";
@@ -41,7 +41,7 @@ export default function FeedbackCard(
                         >
                             <h3>{item.resume.name}</h3>
                         </Link> : null}
-                    <h4>{moment(item.created_at).format("HH:mm DD.MM.YYYY")}</h4>
+                    <h4>{moment(item.created_at).format(`HH:mm, ${DATE_FORMAT}`)}</h4>
                     <Space>
                         <Popconfirm
                             title="Удалить отклик"

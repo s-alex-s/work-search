@@ -1,5 +1,7 @@
 "use server";
 
+import {BACKEND_URL} from "@/config";
+
 export type VacancyType = {
     id: number;
     title: string;
@@ -43,7 +45,7 @@ export type VacancyListType = {
 
 export async function get_vacancies(token: string, link?: string): Promise<VacancyListType> {
     let response = await fetch(
-        link ?? 'http://localhost:8000/api/vacancy/',
+        link ?? BACKEND_URL + '/api/vacancy/',
         {
             method: 'GET',
             headers: {
@@ -58,7 +60,7 @@ export async function get_vacancies(token: string, link?: string): Promise<Vacan
 
 export async function get_vacancy(token: string, id: string): Promise<VacancyType> {
     let response = await fetch(
-        `http://localhost:8000/api/vacancy/${id}/`,
+        BACKEND_URL + `/api/vacancy/${id}/`,
         {
             method: 'GET',
             headers: {
@@ -74,7 +76,7 @@ export async function get_vacancy(token: string, id: string): Promise<VacancyTyp
 export async function create_vacancy(token: string, data: VacancyFormType):
     Promise<{ response: VacancyType, status: boolean }> {
     let response = await fetch(
-        'http://localhost:8000/api/vacancy/create/',
+        BACKEND_URL + '/api/vacancy/create/',
         {
             method: 'POST',
             headers: {
@@ -91,7 +93,7 @@ export async function create_vacancy(token: string, data: VacancyFormType):
 export async function delete_vacancy(token: string, id: number):
     Promise<boolean> {
     let response = await fetch(
-        `http://localhost:8000/api/vacancy/${id}/`,
+        BACKEND_URL + `/api/vacancy/${id}/`,
         {
             method: 'DELETE',
             headers: {
@@ -107,7 +109,7 @@ export async function delete_vacancy(token: string, id: number):
 export async function change_vacancy(token: string, data: VacancyEditType):
     Promise<{ response: VacancyType, status: boolean }> {
     let response = await fetch(
-        `http://localhost:8000/api/vacancy/${data.id}/`,
+        BACKEND_URL + `/api/vacancy/${data.id}/`,
         {
             method: 'PATCH',
             headers: {
@@ -123,7 +125,7 @@ export async function change_vacancy(token: string, data: VacancyEditType):
 
 export async function search_vacancies(title: string, token: string, link?: string): Promise<VacancyListType | null> {
     let response = await fetch(
-        link ?? 'http://localhost:8000/api/vacancy/search/',
+        link ?? BACKEND_URL + '/api/vacancy/search/',
         {
             method: 'POST',
             headers: {

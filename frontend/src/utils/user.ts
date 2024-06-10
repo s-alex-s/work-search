@@ -1,8 +1,9 @@
 import {UserDataType} from "@/utils/auth";
+import {BACKEND_URL} from "@/config";
 
 export async function deleteUser(token: string, current_password: string): Promise<boolean> {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/me/',
+        BACKEND_URL + '/api/auth/users/me/',
         {
             method: 'DELETE',
             headers: {
@@ -20,7 +21,7 @@ export async function deleteUser(token: string, current_password: string): Promi
 
 export async function retrieveUserData(access: string): Promise<UserDataType | null> {
     let user_data = await fetch(
-        'http://localhost:8000/api/auth/users/me/',
+        BACKEND_URL + '/api/auth/users/me/',
         {
             method: 'GET',
             headers: {
@@ -36,7 +37,7 @@ export async function retrieveUserData(access: string): Promise<UserDataType | n
 
 export async function reset_password(email: string) {
     const response = await fetch(
-        'http://localhost:8000/api/auth/users/reset_password/',
+        BACKEND_URL + '/api/auth/users/reset_password/',
         {
             method: "POST",
             headers: {
@@ -54,7 +55,7 @@ export async function reset_password_confirm(
     new_password: string,
     re_new_password: string) {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/reset_password_confirm/',
+        BACKEND_URL + '/api/auth/users/reset_password_confirm/',
         {
             method: 'POST',
             headers: {
@@ -73,7 +74,7 @@ export async function reset_password_confirm(
 
 export async function forgot_username(email: string) {
     const response = await fetch(
-        'http://localhost:8000/api/auth/users/forgot_username/',
+        BACKEND_URL + '/api/auth/users/forgot_username/',
         {
             method: "POST",
             headers: {
@@ -93,7 +94,7 @@ export async function change_user_info(
     }
 ) {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/me/',
+        BACKEND_URL + '/api/auth/users/me/',
         {
             method: 'PATCH',
             headers: {
@@ -116,7 +117,7 @@ export async function change_user_password(
     token: string
 ): Promise<object | null> {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/set_password/',
+        BACKEND_URL + '/api/auth/users/set_password/',
         {
             method: 'POST',
             headers: {

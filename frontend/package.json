@@ -12,7 +12,7 @@
     "@ant-design/nextjs-registry": "^1.0.0",
     "antd": "^5.18.0",
     "jwt-decode": "^4.0.0",
-    "libphonenumber-js": "^1.11.2",
+    "libphonenumber-js": "^1.11.3",
     "moment": "^2.30.1",
     "next": "^14.2.3",
     "react": "^18",

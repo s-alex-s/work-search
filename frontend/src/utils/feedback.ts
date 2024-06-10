@@ -1,5 +1,7 @@
 "use server";
 
+import {BACKEND_URL} from "@/config";
+
 export type FeedbackType = {
     id?: number,
     resume: number,
@@ -25,7 +27,7 @@ export async function create_feedback(token: string, data: { vacancy: number }):
     Promise<{ response: FeedbackType, status: boolean }> {
 
     let response = await fetch(
-        'http://localhost:8000/api/feedback/create/',
+        BACKEND_URL + '/api/feedback/create/',
         {
             method: 'POST',
             headers: {
@@ -41,7 +43,7 @@ export async function create_feedback(token: string, data: { vacancy: number }):
 
 export async function delete_feedback(token: string, id: number): Promise<boolean> {
     let response = await fetch(
-        `http://localhost:8000/api/feedback/delete/${id}/`,
+        BACKEND_URL + `/api/feedback/delete/${id}/`,
         {
             method: 'DELETE',
             headers: {
@@ -56,7 +58,7 @@ export async function delete_feedback(token: string, id: number): Promise<boolea
 
 export async function get_feedbacks(token: string, link?: string): Promise<FeedbackListType> {
     let response = await fetch(
-        link ?? 'http://localhost:8000/api/feedback/',
+        link ?? BACKEND_URL + '/api/feedback/',
         {
             method: 'GET',
             headers: {
@@ -71,7 +73,7 @@ export async function get_feedbacks(token: string, link?: string): Promise<Feedb
 
 export async function get_user_feedbacks(token: string, link?: string): Promise<FeedbackListType | null> {
     let response = await fetch(
-        link ?? 'http://localhost:8000/api/feedback/user/',
+        link ?? BACKEND_URL + '/api/feedback/user/',
         {
             method: 'GET',
             headers: {

@@ -1,6 +1,6 @@
 import styles from "@/app/resume/resume.module.css";
 import {getUserOrLogout} from "@/utils/client_auth";
-import {create_resume, ResumeFormType, ResumeType} from "@/utils/resume";
+import {create_resume, ResumeFormType, ResumeGetType} from "@/utils/resume";
 import {
     COUNTRIES_OPTIONS,
     MESSAGE_DURATION,
@@ -24,7 +24,7 @@ export default function CreateResumeForm(
     }: {
         context: AuthContextType,
         router: AppRouterInstance,
-        setResume: Dispatch<SetStateAction<ResumeType | null>>
+        setResume: Dispatch<SetStateAction<ResumeGetType | null>>
     }) {
 
     const {message} = App.useApp();
@@ -51,7 +51,7 @@ export default function CreateResumeForm(
                     setResume(resumeCreate.response);
                     message.success('Резюме создано', MESSAGE_DURATION);
                 } else {
-                    getFormErrors(resumeCreate, form, {phone_number: ['Неверный номер телефона']});
+                    getFormErrors(resumeCreate.response, form, {phone_number: ['Неверный номер телефона']});
                 }
                 setButtonLoading(false);
             }}

@@ -2,7 +2,7 @@
 
 import {getCookie, setCookie} from "@/utils/cookieFunctions";
 import {cache} from "react";
-import {ACCESS_TOKEN_LIFETIME, REFRESH_TOKEN_LIFETIME} from "@/config";
+import {ACCESS_TOKEN_LIFETIME, BACKEND_URL, REFRESH_TOKEN_LIFETIME} from "@/config";
 import {retrieveUserData} from "@/utils/user";
 
 export type UserDataType = {
@@ -45,7 +45,7 @@ export async function registerUser(values: {
     re_password: string
 }): Promise<object | null> {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/',
+        BACKEND_URL + '/api/auth/users/',
         {
             method: "POST",
             headers: {
@@ -63,7 +63,7 @@ export async function registerUser(values: {
 
 export async function loginUser(values: { username: string, password: string }): Promise<UserDataType | null> {
     let response = await fetch(
-        'http://localhost:8000/api/auth/jwt/create/',
+        BACKEND_URL + '/api/auth/jwt/create/',
         {
             method: 'POST',
             headers: {
@@ -92,7 +92,7 @@ export async function updateToken(refresh: string | undefined): Promise<{
     if (!refresh) return null;
 
     let response = await fetch(
-        'http://localhost:8000/api/auth/jwt/refresh/',
+        BACKEND_URL + '/api/auth/jwt/refresh/',
         {
             method: 'POST',
             headers: {
@@ -119,7 +119,7 @@ let verifyToken = cache(async (token: string | undefined): Promise<string | null
     if (!token) return null;
 
     let response = await fetch(
-        'http://localhost:8000/api/auth/jwt/verify/',
+        BACKEND_URL + '/api/auth/jwt/verify/',
         {
             method: 'POST',
             headers: {
@@ -138,7 +138,7 @@ let verifyToken = cache(async (token: string | undefined): Promise<string | null
 
 export async function resendActivation(email: string) {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/resend_activation/',
+        BACKEND_URL + '/api/auth/users/resend_activation/',
         {
             method: "POST",
             headers: {
@@ -155,7 +155,7 @@ export async function resendActivation(email: string) {
 
 export async function userActivate(uid: string, token: string) {
     let response = await fetch(
-        'http://localhost:8000/api/auth/users/activation/',
+        BACKEND_URL + '/api/auth/users/activation/',
         {
             method: "POST",
             headers: {
@@ -173,7 +173,7 @@ export async function userActivate(uid: string, token: string) {
 
 export async function resend_activation_user(email: string) {
     const response = await fetch(
-        'http://localhost:8000/api/auth/users/resend_activation/',
+        BACKEND_URL + '/api/auth/users/resend_activation/',
         {
             method: "POST",
             headers: {

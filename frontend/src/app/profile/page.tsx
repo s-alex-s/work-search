@@ -21,6 +21,7 @@ import {change_user_info, change_user_password, deleteUser} from "@/utils/user";
 import {getUserOrLogout, logoutUser} from "@/utils/client_auth";
 import {UserDataType} from "@/utils/auth";
 import {getFormErrors} from "@/utils/form";
+import "moment/locale/ru";
 
 type FirstNameFields = {
     first_name: string;
