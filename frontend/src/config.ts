@@ -5,7 +5,7 @@ import {DefaultOptionType} from "rc-select/es/Select";
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const display_salary = (item: { salary: number, salary_currency: string }) => {
-    return new Intl.NumberFormat('', {
+    return new Intl.NumberFormat('ru', {
         style: 'currency',
         currency: item.salary_currency,
         currencyDisplay: 'narrowSymbol',
