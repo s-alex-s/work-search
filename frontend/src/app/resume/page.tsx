@@ -115,11 +115,11 @@ export default function ResumePage() {
                 </Divider>
                 <div style={{textAlign: 'center', lineHeight: 1, marginBottom: 20}}>{resume.user_info.gender === 'm' ?
                     `Мужчина, ${
-                        moment().diff(moment(resume.user_info.birth_date), 'years')
-                    } лет, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
+                        moment(resume.user_info.birth_date).fromNow(true)
+                    }, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
                     `Женщина, ${
-                        moment().diff(moment(resume.user_info.birth_date), 'years')
-                    } лет, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
+                        moment(resume.user_info.birth_date).fromNow(true)
+                    }, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
 
                 <List.Item className={styles.listItem}>
                     <h3 className={styles.label}>Номер телефона</h3>

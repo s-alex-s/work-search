@@ -57,7 +57,7 @@ class CreateResumeView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
 
         data = dict(serializer.data)
-        data['user_info'] = UserResumeSerializer(CustomUser.objects.get(self.request.user.pk)).data
+        data['user_info'] = UserResumeSerializer(CustomUser.objects.get(pk=self.request.user.pk)).data
 
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
