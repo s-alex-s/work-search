@@ -134,7 +134,7 @@ export default function VacancyCard(
 
             <Modal
                 open={openModal}
-                title="Создание вакансии"
+                title="Вакансия"
                 okText="Сохранить"
                 confirmLoading={loadingModal}
                 cancelText="Отмена"
