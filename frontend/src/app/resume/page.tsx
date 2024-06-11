@@ -298,7 +298,7 @@ export default function ResumePage() {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Введите свою специалность"
+                                    message: "Введите свою специальность"
                                 }
                             ]}
                         >

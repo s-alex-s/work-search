@@ -81,11 +81,11 @@ export default function CreateResumeForm(
 
             <Form.Item<ResumeFormType>
                 name="profession"
-                label="Специалность"
+                label="Специальность"
                 rules={[
                     {
                         required: true,
-                        message: "Введите свою специалность"
+                        message: "Введите свою специальность"
                     }
                 ]}
             >
