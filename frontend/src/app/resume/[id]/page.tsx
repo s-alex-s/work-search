@@ -54,61 +54,61 @@ export default function ProfilePage({params}: { params: { id: string } }) {
                         moment().diff(moment(resume.user_info.birth_date), 'years')
                     } лет, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
 
-                <List.Item className={styles.listItem}>
+                {resume.phone_number ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Номер телефона</h2>
                         <h3>{resume.phone_number}</h3>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.additional_contacts ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Способы связи</h2>
                         <p>{resume.additional_contacts}</p>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.profession ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Специальность</h2>
                         <h3>{resume.profession}</h3>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.busyness ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Занятость</h2>
                         <h3>{resume.busyness}</h3>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.languages ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Знание языков</h2>
                         <p>{resume.languages}</p>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.education ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Образование</h2>
                         <p>{resume.education}</p>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.country ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Страна</h2>
                         <h3>{COUNTRIES[resume.country]}</h3>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
 
-                <List.Item className={styles.listItem}>
+                {resume.work_experience ? <List.Item className={styles.listItem}>
                     <Flex vertical>
                         <h2 className={styles.label}>Опыт работы</h2>
                         <p>{resume.work_experience}</p>
                     </Flex>
-                </List.Item>
+                </List.Item> : null}
             </List>
         </Flex>
     )

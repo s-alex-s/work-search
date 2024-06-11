@@ -10,7 +10,8 @@ import {
     display_salary,
     MESSAGE_DURATION,
     SMALL_TEXT_MAX_LENGTH,
-    TEXT_MAX_LENGTH
+    TEXT_MAX_LENGTH,
+    VACANCY_TITLE_LENGTH
 } from "@/config";
 import {Dispatch, SetStateAction, useState} from "react";
 import {getUserOrLogout} from "@/utils/client_auth";
@@ -38,7 +39,7 @@ export function VacancyDataCard(
             <Card
                 className={styles.card}
                 title={
-                    linkOff ? <h2 className={styles.link}>{item.title}</h2> :
+                    linkOff ? <h2 className={styles.title}>{item.title}</h2> :
                         <Link href={`/vacancies/${item.id}/`} className={styles.link} style={{color: red.primary}}>
                             <h2>{item.title}</h2>
                         </Link>}
@@ -48,10 +49,10 @@ export function VacancyDataCard(
                 {item.company ? <><h3>Организация</h3><p>{item.company}</p></> : null}
                 {item.country ? <><h3>Страна</h3><p>{COUNTRIES[item.country]}</p></> : null}
 
-                <Button
+                {context.user?.id !== item.user_id ? <Button
                     style={{float: 'right'}}
                     type="primary"
-                    disabled={item.feedback}
+                    disabled={item.feedback || !item.has_resume}
                     loading={buttonLoading}
                     onClick={async () => {
                         setButtonLoading(true);
@@ -71,8 +72,8 @@ export function VacancyDataCard(
                         }
                     }}
                 >
-                    {item.feedback ? 'Отклик отправлен' : 'Откликнуться'}
-                </Button>
+                    {item.feedback ? 'Отклик отправлен' : !item.has_resume ? 'У вас нет резюме' : 'Откликнуться'}
+                </Button> : null}
             </Card>
         </>
     )
@@ -96,7 +97,7 @@ export default function VacancyCard(
         <>
             <Card
                 className={styles.card}
-                title={<h2 style={{margin: 0}}>{item.title}</h2>}
+                title={<h2 className={styles.title}>{item.title}</h2>}
                 extra={moment(item.created_at).format(`Опубликовано в HH:mm, ${DATE_FORMAT}`)}
             >
                 {item.salary ? <><h3>Зарплата</h3><p>{display_salary(item)}</p></> : 'Уровень дохода не указан'}
@@ -157,11 +158,10 @@ export default function VacancyCard(
                             );
                             if (vacancyChange.status) {
                                 data = data.map(value => value.id === item.id ? vacancyChange.response : value);
-                                setData([...data])
+                                setData([...data]);
                                 message.success('Вакансия изменена', MESSAGE_DURATION);
                             }
                             setLoadingModal(false);
-                            form.resetFields();
                             setOpenModal(false);
                         }}
                     >
@@ -172,17 +172,23 @@ export default function VacancyCard(
                 <Form.Item<VacancyFormType>
                     name="title"
                     label="Название"
-                    rules={[{
-                        required: true,
-                        message: 'Введите название вакансии'
-                    }]}
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Введите название вакансии'
+                        },
+                        {
+                            max: VACANCY_TITLE_LENGTH,
+                            message: `Длина названия вакансии не должна превышать ${VACANCY_TITLE_LENGTH} символов`
+                        }
+                    ]}
                 >
                     <Input
                         className={styles.form_item}
-                        maxLength={SMALL_TEXT_MAX_LENGTH}
+                        maxLength={VACANCY_TITLE_LENGTH}
                         count={{
                             show: true,
-                            max: SMALL_TEXT_MAX_LENGTH
+                            max: VACANCY_TITLE_LENGTH
                         }}
                     />
                 </Form.Item>

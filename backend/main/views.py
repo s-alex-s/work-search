@@ -153,10 +153,13 @@ class GetUpdateDeleteVacancyView(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
 
         data = dict(serializer.data)
-        data['feedback'] = bool(Feedback.objects.filter(
-            resume=self.request.user.resume,
-            vacancy=instance
-        ))
+        data['has_resume'] = self.request.user.has_resume()
+        if data['has_resume']:
+            data['feedback'] = bool(Feedback.objects.filter(
+                resume=self.request.user.resume,
+                vacancy=instance
+            ))
+        data['user_id'] = instance.user.pk
 
         return Response(data)
 

@@ -12,7 +12,9 @@ export type VacancyType = {
     requirements: string;
     created_at: string;
     description: string;
-    feedback?: boolean
+    feedback?: boolean;
+    user_id: number;
+    has_resume: boolean;
 };
 
 export type VacancyFormType = {

@@ -9,7 +9,7 @@ import {MessageInstance} from "antd/es/message/interface";
 import {delete_feedback, FeedbackGetType} from "@/utils/feedback";
 import Link from "next/link";
 import {red} from "@ant-design/colors";
-import styles from "@/components/vacancy-card/vacancy-card.module.css";
+import styles from "@/components/feedback-card/feedback-card.module.css";
 
 export default function FeedbackCard(
     {item, data, setData, context, router, message}: {
