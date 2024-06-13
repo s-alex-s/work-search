@@ -48,11 +48,11 @@ export default function ProfilePage({params}: { params: { id: string } }) {
                 </Divider>
                 <div style={{textAlign: 'center', lineHeight: 1}}>{resume.user_info.gender === 'm' ?
                     `Мужчина, ${
-                        moment().diff(moment(resume.user_info.birth_date), 'years')
-                    } лет, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
+                        moment(resume.user_info.birth_date).fromNow(true)
+                    }, родился ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}` :
                     `Женщина, ${
-                        moment().diff(moment(resume.user_info.birth_date), 'years')
-                    } лет, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
+                        moment(resume.user_info.birth_date).fromNow(true)
+                    }, родилась ${moment(resume.user_info.birth_date).format(DATE_FORMAT)}`}</div>
 
                 {resume.phone_number ? <List.Item className={styles.listItem}>
                     <Flex vertical>
