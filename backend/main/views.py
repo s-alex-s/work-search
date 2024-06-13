@@ -221,6 +221,8 @@ class SearchVacancyView(ListAPIView):
                 else:
                     serializer.data[n]['feedback'] = False
 
+                serializer.data[n]['has_resume'] = self.request.user.has_resume()
+
             return self.get_paginated_response(serializer.data)
 
         serializer = SearchVacancyResultSerializer(queryset, many=True)
@@ -231,6 +233,8 @@ class SearchVacancyView(ListAPIView):
                 serializer.data[n]['feedback'] = True
             else:
                 serializer.data[n]['feedback'] = False
+
+            serializer.data[n]['has_resume'] = self.request.user.has_resume()
 
         return Response(serializer.data)
 

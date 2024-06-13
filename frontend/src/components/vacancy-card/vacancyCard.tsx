@@ -40,8 +40,8 @@ export function VacancyDataCard(
                 className={styles.card}
                 title={
                     linkOff ? <h2 className={styles.title}>{item.title}</h2> :
-                        <Link href={`/vacancies/${item.id}/`} className={styles.link} style={{color: red.primary}}>
-                            <h2>{item.title}</h2>
+                        <Link href={`/vacancies/${item.id}/`} style={{color: red.primary, lineHeight: 1.5}}>
+                            <h2 className={styles.link}>{item.title}</h2>
                         </Link>}
                 extra={moment(item.created_at).format(`Опубликовано в HH:mm, ${DATE_FORMAT}`)}
             >
