@@ -139,10 +139,10 @@ STATIC_ROOT = "/backend/static/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('BACKEND_URL'),
     os.getenv('FRONTEND_URL'),
 ]
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [os.getenv('BACKEND_DOMAIN')]
 
 AUTH_USER_MODEL = 'main.CustomUser'
 
